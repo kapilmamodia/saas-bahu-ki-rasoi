@@ -1,27 +1,69 @@
+/* globals.css — Saas Bahu Ki Rasoi base styles and CSS custom properties */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Brand CSS Custom Properties ─────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --color-bg-primary:  #F5EDD6;
+  --color-bg-card:     #FDF6E3;
+  --color-bg-dark:     #3B1F0C;
+
+  /* Brand */
+  --color-brand-wood:  #7B4A1E;
+  --color-brand-rust:  #C0622A;
+  --color-brand-gold:  #D4A017;
+
+  /* Folk Art Accents */
+  --color-folk-sage:   #7A9E7E;
+  --color-folk-terra:  #E07B39;
+
+  /* Text */
+  --color-text-primary: #2C1A0E;
+  --color-text-body:    #4A3728;
+  --color-text-muted:   #8B6F5E;
+  --color-text-on-dark: #F5EDD6;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ── Base Resets ─────────────────────────────────────────────────────────── */
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-body);
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* ── Utility: Spice-line divider (dot-dash in gold) ─────────────────────── */
+.divider-spice {
+  border: none;
+  height: 2px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--color-brand-gold) 0px,
+    var(--color-brand-gold) 6px,
+    transparent 6px,
+    transparent 10px,
+    var(--color-brand-gold) 10px,
+    var(--color-brand-gold) 12px,
+    transparent 12px,
+    transparent 18px
+  );
+  opacity: 0.6;
+}
+
+/* ── Parchment shimmer skeleton (loading states) ─────────────────────────── */
+@keyframes shimmer-parchment {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton-parchment {
+  background: linear-gradient(
+    90deg,
+    #F5EDD6 25%,
+    #EFE3C2 50%,
+    #F5EDD6 75%
+  );
+  background-size: 800px 100%;
+  animation: shimmer-parchment 1.4s ease-in-out infinite;
+  border-radius: 0.375rem;
 }
