@@ -1,11 +1,12 @@
 // Admin menu management page — table of all items with edit, toggle, delete actions.
-// Server Component for data fetching; inline client actions via server actions.
+// Server Component for data fetching; delete confirmation handled in DeleteButton client component.
 import Link from "next/link";
 import Image from "next/image";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { MenuItem, Category } from "@/types";
 import { Plus } from "lucide-react";
+import DeleteButton from "@/components/admin/DeleteButton";
 
 interface MenuItemWithCategory extends MenuItem {
   category: Category;
@@ -178,14 +179,7 @@ export default async function AdminMenuPage() {
                         >
                           Edit
                         </Link>
-                        <form action={deleteItem.bind(null, item.id)}
-                          onSubmit={(e) => {
-                            if (!confirm(`Delete "${item.name}"? This cannot be undone.`)) e.preventDefault();
-                          }}>
-                          <button type="submit" className="font-hind text-xs text-brand-muted hover:text-brand-rust transition-colors">
-                            Delete
-                          </button>
-                        </form>
+                        <DeleteButton id={item.id} name={item.name} deleteAction={deleteItem} />
                       </div>
                     </td>
                   </tr>
