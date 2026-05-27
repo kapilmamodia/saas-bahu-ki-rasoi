@@ -1,10 +1,12 @@
 "use client";
 // ItemForm — shared form for adding and editing menu items in the admin panel.
 // Handles photo upload to Supabase Storage, all dietary toggles, price input.
+// DB writes go through server actions (service role) — NOT the anon client.
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import { createMenuItem, updateMenuItem } from "@/lib/actions/menuActions";
 import type { Category, MenuItem } from "@/types";
 
 interface ItemFormProps {
@@ -88,7 +90,6 @@ export default function ItemForm({ categories, defaultValues }: ItemFormProps) {
 
     setSaving(true);
     try {
-      const supabase = createClient();
       // Convert rupees → paise (multiply by 100, round to avoid float issues)
       const priceCents = Math.round(price * 100);
 
@@ -104,24 +105,14 @@ export default function ItemForm({ categories, defaultValues }: ItemFormProps) {
         is_available: isAvailable,
         is_special: isSpecial,
         special_note: specialNote.trim() || null,
-        updated_at: new Date().toISOString(),
       };
 
-      let dbError;
-      if (isEdit && defaultValues) {
-        // Update existing item
-        const { error } = await supabase
-          .from("menu_items")
-          .update(payload)
-          .eq("id", defaultValues.id);
-        dbError = error;
-      } else {
-        // Insert new item
-        const { error } = await supabase.from("menu_items").insert(payload);
-        dbError = error;
-      }
+      // Use server actions (service role) — anon client cannot write to menu_items
+      const errMsg = isEdit && defaultValues
+        ? await updateMenuItem(defaultValues.id, payload)
+        : await createMenuItem(payload);
 
-      if (dbError) throw dbError;
+      if (errMsg) { setError(errMsg); return; }
 
       // Redirect back to menu list on success
       router.push("/admin/menu");
