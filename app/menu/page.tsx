@@ -1,6 +1,6 @@
 // Menu page — full menu grouped by category with sticky nav tabs.
 // Server Component: fetches data server-side, renders MenuCard (client).
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import MenuGrid from "@/components/menu/MenuGrid";
 import type { Category, MenuItem } from "@/types";
 
@@ -22,7 +22,7 @@ interface MenuItemWithCategory extends MenuItem {
  */
 async function getMenuItems(): Promise<MenuItemWithCategory[]> {
   try {
-    const supabase = createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("menu_items")
       .select("*, category:categories(id, name, sort_order)")

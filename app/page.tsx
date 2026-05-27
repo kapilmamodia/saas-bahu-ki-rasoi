@@ -1,6 +1,6 @@
 // Home page — Today's Specials hero. Server Component with 60s ISR.
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import MenuCard from "@/components/menu/MenuCard";
 import type { MenuItem } from "@/types";
 
@@ -12,7 +12,7 @@ export const revalidate = 60;
 /** Fetch today's specials — returns empty array on error */
 async function getSpecials(): Promise<MenuItem[]> {
   try {
-    const supabase = createClient();
+    const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("menu_items")
       .select("*, category:categories(id, name, sort_order)")
