@@ -5,8 +5,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Tag, X } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
+import { validateCoupon } from "@/lib/actions/couponActions";
+import type { CouponValidationResult } from "@/types";
 
 /**
  * Tax rate — read from env; defaults to 18% (GST) if not set.
@@ -34,6 +36,33 @@ export default function CartPage() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
+  // ── Coupon state ──────────────────────────────────────────────────────────
+  const [couponInput, setCouponInput] = useState("");
+  const [couponResult, setCouponResult] = useState<CouponValidationResult | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+
+  /** Apply coupon — calls validateCoupon server action */
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim()) return;
+    try {
+      setCouponLoading(true);
+      setCouponResult(null);
+      const result = await validateCoupon(couponInput.trim(), totalCents);
+      setCouponResult(result);
+    } catch (err) {
+      console.error("[CartPage] coupon error:", err);
+      setCouponResult({ valid: false, error: "Could not validate coupon." });
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  /** Remove applied coupon */
+  const handleRemoveCoupon = () => {
+    setCouponInput("");
+    setCouponResult(null);
+  };
+
   /** POST to /api/checkout and redirect to the confirmation page */
   const handleCheckout = async () => {
     if (!customerEmail.trim()) {
@@ -47,7 +76,13 @@ export default function CartPage() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, customerEmail, customerName }),
+        body: JSON.stringify({
+          items,
+          customerEmail,
+          customerName,
+          // Pass applied coupon code so server can record + increment usage
+          couponCode: couponResult?.valid ? couponResult.coupon?.code : undefined,
+        }),
       });
 
       const data: { url?: string; path?: string; error?: string } = await res.json();
@@ -69,9 +104,11 @@ export default function CartPage() {
     }
   };
 
-  // Compute tax and grand total from cart subtotal
-  const taxCents = Math.round(totalCents * TAX_RATE);
-  const grandTotalCents = totalCents + taxCents;
+  // Compute discount, tax and grand total from cart subtotal
+  const discountCents = couponResult?.valid ? (couponResult.discountCents ?? 0) : 0;
+  const discountedSubtotal = totalCents - discountCents;
+  const taxCents = Math.round(discountedSubtotal * TAX_RATE);
+  const grandTotalCents = discountedSubtotal + taxCents;
 
   // ── Empty cart state ─────────────────────────────────────────────────────
   if (items.length === 0) {
@@ -188,6 +225,70 @@ export default function CartPage() {
           <span>Subtotal</span>
           <span>{formatPrice(totalCents)}</span>
         </div>
+
+        {/* ── Coupon input ──────────────────────────────────────────────── */}
+        {!couponResult?.valid ? (
+          <div className="flex gap-2 mb-3">
+            <input
+              type="text"
+              value={couponInput}
+              onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+              onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+              placeholder="Coupon code"
+              className="flex-1 border border-brand-wood/30 rounded-lg px-3 py-2
+                         font-hind text-sm text-brand-body bg-brand-bg
+                         placeholder:text-brand-muted/60 focus:outline-none
+                         focus:ring-2 focus:ring-brand-wood/40"
+            />
+            <button
+              onClick={handleApplyCoupon}
+              disabled={couponLoading || !couponInput.trim()}
+              className="flex items-center gap-1.5 bg-brand-wood hover:bg-brand-rust
+                         text-white font-hind text-sm px-4 py-2 rounded-lg
+                         transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {couponLoading ? (
+                <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+              ) : (
+                <Tag size={14} />
+              )}
+              Apply
+            </button>
+          </div>
+        ) : (
+          /* Applied coupon chip */
+          <div className="flex items-center justify-between mb-3 bg-brand-sage/10
+                          border border-brand-sage/30 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2">
+              <Tag size={14} className="text-brand-sage" />
+              <span className="font-caveat text-base text-brand-sage font-semibold">
+                {couponResult.coupon?.code}
+              </span>
+              <span className="font-hind text-xs text-brand-sage">
+                ({couponResult.coupon?.type === "percent"
+                  ? `${couponResult.coupon.value}% off`
+                  : `₹${(couponResult.coupon!.value / 100).toLocaleString("en-IN")} off`})
+              </span>
+            </div>
+            <button onClick={handleRemoveCoupon} className="text-brand-muted hover:text-brand-rust transition-colors">
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
+        {/* Coupon error message */}
+        {couponResult && !couponResult.valid && (
+          <p className="font-hind text-xs text-red-600 mb-2 -mt-1">{couponResult.error}</p>
+        )}
+
+        {/* Discount row — only shown when valid coupon applied */}
+        {discountCents > 0 && (
+          <div className="flex justify-between font-hind text-brand-sage text-sm mb-2">
+            <span>Discount</span>
+            <span>− {formatPrice(discountCents)}</span>
+          </div>
+        )}
+
         {/* Tax row */}
         <div className="flex justify-between font-hind text-brand-muted text-sm mb-4">
           <span>GST ({(TAX_RATE * 100).toFixed(0)}%)</span>

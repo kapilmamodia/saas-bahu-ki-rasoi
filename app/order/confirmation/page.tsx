@@ -161,6 +161,21 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
           <span>Subtotal</span>
           <span>{formatPrice(typedOrder.subtotal_cents)}</span>
         </div>
+        {/* Discount row — only shown when a coupon was applied */}
+        {typedOrder.discount_cents > 0 && (
+          <div className="flex justify-between font-hind text-sm text-brand-sage mb-1">
+            <span>
+              Discount
+              {typedOrder.coupon_code && (
+                <span className="ml-1 font-caveat text-xs bg-brand-sage/15 border border-brand-sage/30
+                                 text-brand-sage px-2 py-0.5 rounded-full">
+                  {typedOrder.coupon_code}
+                </span>
+              )}
+            </span>
+            <span>− {formatPrice(typedOrder.discount_cents)}</span>
+          </div>
+        )}
         <div className="flex justify-between font-hind text-sm text-brand-muted mb-3">
           <span>GST (18%)</span>
           <span>{formatPrice(typedOrder.tax_cents)}</span>

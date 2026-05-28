@@ -211,6 +211,17 @@ export default function InvoiceTemplate({ order, orderItems }: InvoiceTemplatePr
             <Text style={styles.totalLabel}>Subtotal</Text>
             <Text style={styles.totalValue}>{fmt(order.subtotal_cents)}</Text>
           </View>
+          {/* Discount row — only rendered when a coupon was applied */}
+          {order.discount_cents > 0 && (
+            <View style={styles.totalRow}>
+              <Text style={[styles.totalLabel, { color: "#7A9E7E" }]}>
+                Discount{order.coupon_code ? ` (${order.coupon_code})` : ""}
+              </Text>
+              <Text style={[styles.totalValue, { color: "#7A9E7E" }]}>
+                − {fmt(order.discount_cents)}
+              </Text>
+            </View>
+          )}
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>GST (18%)</Text>
             <Text style={styles.totalValue}>{fmt(order.tax_cents)}</Text>

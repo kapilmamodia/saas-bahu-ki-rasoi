@@ -3,6 +3,8 @@ import Link from "next/link";
 import { createPublicClient } from "@/lib/supabase/public";
 import MenuCard from "@/components/menu/MenuCard";
 import type { MenuItem } from "@/types";
+import { getHomePageCoupons } from "@/lib/actions/couponActions";
+import CouponPopup from "@/components/coupon/CouponPopup";
 
 /**
  * Force dynamic rendering — never pre-render at build time with empty data.
@@ -37,6 +39,8 @@ async function getSpecials(): Promise<MenuItem[]> {
 /** Home page — hero section + today's specials grid */
 export default async function HomePage() {
   const specials = await getSpecials();
+  // Coupons flagged to show on home (active + within validity window)
+  const promoCoupons = await getHomePageCoupons();
 
   return (
     <div className="min-h-screen">
@@ -71,7 +75,11 @@ export default async function HomePage() {
         </p>
       </section>
 
-      {/* ── Today&apos;s Specials ──────────────────────────────────────────── */}
+      {/* ── Coupon Popup (Style B) — slides in after 2s, bottom-right ─────── */}
+      {promoCoupons.length > 0 && <CouponPopup coupons={promoCoupons} />}
+
+
+      {/* ── Today's Specials ──────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-4 py-12">
         <div className="text-center mb-8">
           <span className="font-caveat text-brand-rust text-lg">✨ Aaj ka Special</span>

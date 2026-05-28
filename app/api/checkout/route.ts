@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CartItem } from "@/types";
+import { validateCoupon, incrementCouponUsage } from "@/lib/actions/couponActions";
 
 /** Tax rate — 18% GST by default */
 const TAX_RATE = parseFloat(process.env.TAX_RATE ?? "0.18");
@@ -22,6 +23,7 @@ interface CheckoutBody {
   items: CartItem[];
   customerEmail: string;
   customerName: string;
+  couponCode?: string;
 }
 
 /**
@@ -32,7 +34,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse and validate incoming request body
     const body: CheckoutBody = await request.json();
-    const { items, customerEmail, customerName } = body;
+    const { items, customerEmail, customerName, couponCode } = body;
 
     // Basic validation — must have items and a customer email
     if (!items || items.length === 0) {
@@ -42,13 +44,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Customer email is required" }, { status: 400 });
     }
 
-    // Compute order totals (all in paise / cents)
+    // Compute subtotal (all in paise / cents)
     const subtotalCents = items.reduce(
       (sum, i) => sum + i.menuItem.price_cents * i.quantity,
       0
     );
-    const taxCents = Math.round(subtotalCents * TAX_RATE);
-    const totalCents = subtotalCents + taxCents;
+
+    // Validate coupon if provided and calculate discount
+    let discountCents = 0;
+    if (couponCode) {
+      const couponResult = await validateCoupon(couponCode, subtotalCents);
+      if (couponResult.valid) {
+        discountCents = couponResult.discountCents ?? 0;
+      }
+      // If invalid on server re-check, proceed without discount (don't block checkout)
+    }
+
+    const discountedSubtotal = subtotalCents - discountCents;
+    const taxCents = Math.round(discountedSubtotal * TAX_RATE);
+    const totalCents = discountedSubtotal + taxCents;
 
     // ── MOCK: Generate a fake session ID ────────────────────────────────────
     // Replace this with: const session = await stripe.checkout.sessions.create(...)
@@ -60,11 +74,13 @@ export async function POST(request: NextRequest) {
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert({
-        stripe_session_id: mockSessionId, // will be real Stripe session ID later
+        stripe_session_id: mockSessionId,
         customer_email: customerEmail,
         customer_name: customerName || "Guest",
         status: "pending",
         subtotal_cents: subtotalCents,
+        discount_cents: discountCents,
+        coupon_code: couponCode ?? null,
         tax_cents: taxCents,
         total_cents: totalCents,
       })
@@ -80,8 +96,8 @@ export async function POST(request: NextRequest) {
     const orderItems = items.map((i) => ({
       order_id: order.id,
       menu_item_id: i.menuItem.id,
-      item_name: i.menuItem.name,        // snapshot at purchase time
-      item_price_cents: i.menuItem.price_cents, // snapshot at purchase time
+      item_name: i.menuItem.name,
+      item_price_cents: i.menuItem.price_cents,
       quantity: i.quantity,
     }));
 
@@ -91,7 +107,11 @@ export async function POST(request: NextRequest) {
 
     if (itemsError) {
       console.error("[checkout] Failed to save order items:", itemsError);
-      // Order is saved — don't fail the whole checkout, just log
+    }
+
+    // ── Increment coupon usage now that order is saved ───────────────────────
+    if (couponCode && discountCents > 0) {
+      await incrementCouponUsage(couponCode);
     }
 
     // ── Return the redirect URL ──────────────────────────────────────────────

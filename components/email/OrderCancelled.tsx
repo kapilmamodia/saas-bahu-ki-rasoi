@@ -66,6 +66,18 @@ export default function OrderCancelled({ order, orderItems }: OrderCancelledProp
 
             <Hr style={{ borderColor: "#D4A017", margin: "16px 0" }} />
 
+            {/* Totals breakdown */}
+            <Text style={{ color: "#8B6F5E", fontSize: "12px", margin: "0 0 2px" }}>
+              Subtotal: {fmt(order.subtotal_cents)}
+            </Text>
+            {order.discount_cents > 0 && (
+              <Text style={{ color: "#7A9E7E", fontSize: "12px", margin: "0 0 2px" }}>
+                Discount{order.coupon_code ? ` (${order.coupon_code})` : ""}: − {fmt(order.discount_cents)}
+              </Text>
+            )}
+            <Text style={{ color: "#8B6F5E", fontSize: "12px", margin: "0 0 6px" }}>
+              GST (18%): {fmt(order.tax_cents)}
+            </Text>
             <Text style={{ color: "#2C1A0E", fontSize: "16px", fontWeight: "bold", margin: "0 0 4px" }}>
               Order Total: <span style={{ color: "#D4A017" }}>{fmt(order.total_cents)}</span>
             </Text>

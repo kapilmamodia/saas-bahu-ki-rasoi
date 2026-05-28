@@ -136,6 +136,21 @@ export default function OrderConfirmation({
               <Column><Text style={{ color: "#8B6F5E", fontSize: "12px", margin: 0 }}>Subtotal</Text></Column>
               <Column><Text style={{ color: "#4A3728", fontSize: "12px", margin: 0, textAlign: "right" }}>{fmt(order.subtotal_cents)}</Text></Column>
             </Row>
+            {/* Discount row — only shown when coupon was applied */}
+            {order.discount_cents > 0 && (
+              <Row style={{ marginBottom: "4px" }}>
+                <Column>
+                  <Text style={{ color: "#7A9E7E", fontSize: "12px", margin: 0 }}>
+                    Discount{order.coupon_code ? ` (${order.coupon_code})` : ""}
+                  </Text>
+                </Column>
+                <Column>
+                  <Text style={{ color: "#7A9E7E", fontSize: "12px", margin: 0, textAlign: "right" }}>
+                    − {fmt(order.discount_cents)}
+                  </Text>
+                </Column>
+              </Row>
+            )}
             <Row style={{ marginBottom: "8px" }}>
               <Column><Text style={{ color: "#8B6F5E", fontSize: "12px", margin: 0 }}>GST (18%)</Text></Column>
               <Column><Text style={{ color: "#4A3728", fontSize: "12px", margin: 0, textAlign: "right" }}>{fmt(order.tax_cents)}</Text></Column>

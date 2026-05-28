@@ -41,6 +41,8 @@ export interface Order {
   customer_name: string;
   status: "pending" | "paid" | "completed" | "refunded";
   subtotal_cents: number;
+  discount_cents: number;      // 0 if no coupon applied
+  coupon_code: string | null;  // coupon code used, if any
   tax_cents: number;
   total_cents: number;
   invoice_url: string | null;   // Supabase Storage signed URL for PDF
@@ -81,6 +83,36 @@ export interface CartState {
   totalCents: number;
   /** Total number of individual items (sum of quantities) */
   itemCount: number;
+}
+
+// ─── Coupon ───────────────────────────────────────────────────────────────────
+/** A discount coupon code */
+export interface Coupon {
+  id: string;
+  code: string;
+  description: string;
+  /** "percent" = value is 1-100; "flat" = value is paise amount */
+  type: "percent" | "flat";
+  value: number;
+  /** Minimum subtotal (paise) required to apply this coupon */
+  min_order_cents: number;
+  /** null = unlimited uses */
+  max_uses: number | null;
+  used_count: number;
+  valid_from: string;
+  valid_until: string;
+  is_active: boolean;
+  /** When true, a promo banner for this coupon is shown on the public home page */
+  show_on_home: boolean;
+  created_at: string;
+}
+
+/** Result returned by validateCoupon server action */
+export interface CouponValidationResult {
+  valid: boolean;
+  coupon?: Coupon;
+  discountCents?: number;
+  error?: string;
 }
 
 // ─── Admin / Form ─────────────────────────────────────────────────────────────
