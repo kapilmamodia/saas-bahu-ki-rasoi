@@ -12,6 +12,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getResendClient, EMAIL_FROM } from "@/lib/resend";
 import { Order, OrderItem } from "@/types";
 import OrderCompleted from "@/components/email/OrderCompleted";
+import OrderCancelled from "@/components/email/OrderCancelled";
 import { render as renderEmail } from "@react-email/components";
 
 /**
@@ -86,6 +87,23 @@ export async function cancelOrder(orderId: string): Promise<{ error?: string }> 
       return { error: "Failed to cancel order. Please try again." };
     }
 
+    // ── Fetch order + line items so we can send the cancellation email ────────
+    const { data: order } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .single();
+
+    const { data: items } = await supabase
+      .from("order_items")
+      .select("*")
+      .eq("order_id", orderId);
+
+    // Send cancellation email to the customer
+    if (order) {
+      await sendCancellationEmail(order as Order, (items ?? []) as OrderItem[]);
+    }
+
     // Revalidate so admin pages reflect the new status immediately
     revalidatePath("/admin/dashboard");
     revalidatePath(`/admin/orders/${orderId}`);
@@ -124,6 +142,36 @@ async function sendCompletionEmail(order: Order, orderItems: OrderItem[]): Promi
     }
   } catch (err) {
     console.error("[orderActions] Unexpected email error:", err);
+  }
+}
+
+/** Sends the order cancellation email via Resend. Skips if key not configured. */
+async function sendCancellationEmail(order: Order, orderItems: OrderItem[]): Promise<void> {
+  try {
+    const resend = getResendClient();
+    if (!resend) {
+      console.log("[orderActions] Cancellation email skipped — RESEND_API_KEY not configured");
+      return;
+    }
+
+    const emailHtml = await renderEmail(
+      createElement(OrderCancelled, { order, orderItems })
+    );
+
+    const { error } = await resend.emails.send({
+      from: EMAIL_FROM,
+      to: order.customer_email,
+      subject: `Order Cancelled — Saas Bahu Ki Rasoi (#${order.id.slice(0, 8).toUpperCase()})`,
+      html: emailHtml,
+    });
+
+    if (error) {
+      console.error("[orderActions] Resend cancellation email failed:", error);
+    } else {
+      console.log("[orderActions] Cancellation email sent to:", order.customer_email);
+    }
+  } catch (err) {
+    console.error("[orderActions] Unexpected cancellation email error:", err);
   }
 }
 
