@@ -65,8 +65,8 @@ export default async function HomePage() {
       <section className="bg-brand-wood/10 border-y border-brand-wood/20 py-4 px-4 text-center">
         <p className="font-caveat text-lg text-brand-wood">
           🎉 Planning a Kitty Party or Get Together? We&apos;ve got you covered.{" "}
-          <a href="tel:+919829075457" className="underline hover:text-brand-rust transition-colors">
-            Call Veena: +91 98290 75457
+          <a href="tel:+91XXXXXXXXXX" className="underline hover:text-brand-rust transition-colors">
+            Call Veena: +91 XXX-XX-XXXX
           </a>
         </p>
       </section>
