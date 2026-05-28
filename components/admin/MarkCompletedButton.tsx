@@ -3,7 +3,8 @@
  * MarkCompletedButton — admin order detail page.
  *
  * Calls the markOrderCompleted Server Action, then shows success/error feedback.
- * Only shown for orders with status "paid".
+ * Uses a custom in-page confirm modal instead of window.confirm() so it works
+ * reliably on all mobile browsers and PWA/standalone mode.
  */
 import { useState } from "react";
 import { CheckCircle } from "lucide-react";
@@ -18,9 +19,12 @@ export default function MarkCompletedButton({ orderId }: MarkCompletedButtonProp
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  // Controls visibility of the custom confirm modal
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleComplete = async () => {
-    if (!confirm("Mark this order as completed and notify the customer by email?")) return;
+  /** Called when user taps "Confirm" inside the modal */
+  const handleConfirmed = async () => {
+    setShowConfirm(false);
     try {
       setLoading(true);
       setError(null);
@@ -59,8 +63,10 @@ export default function MarkCompletedButton({ orderId }: MarkCompletedButtonProp
       {error && (
         <p className="font-hind text-sm text-red-600 mb-2">{error}</p>
       )}
+
+      {/* Trigger button */}
       <button
-        onClick={handleComplete}
+        onClick={() => setShowConfirm(true)}
         disabled={loading}
         className="w-full flex items-center justify-center gap-2 bg-green-700
                    hover:bg-green-800 text-white font-hind font-semibold py-3
@@ -77,7 +83,44 @@ export default function MarkCompletedButton({ orderId }: MarkCompletedButtonProp
       <p className="font-caveat text-brand-muted text-sm text-center mt-2">
         This will send a completion email to the customer
       </p>
+
+      {/* ── Custom confirm modal ──────────────────────────────────────── */}
+      {showConfirm && (
+        /* Full-screen backdrop */
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          {/* Modal card */}
+          <div className="bg-brand-card border border-brand-wood/30 rounded-2xl shadow-xl
+                          w-full max-w-sm p-6 flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <CheckCircle size={24} className="text-green-600 shrink-0" />
+              <h2 className="font-playfair text-lg text-brand-heading">Mark as Completed?</h2>
+            </div>
+            <p className="font-hind text-sm text-brand-body">
+              This will mark the order as <strong>completed</strong> and send a
+              notification email to the customer.
+            </p>
+            {/* Action buttons */}
+            <div className="flex gap-3 mt-1">
+              {/* Cancel — dismiss modal */}
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="flex-1 py-2.5 rounded-full border border-brand-wood/40
+                           font-hind text-sm text-brand-body hover:bg-brand-bg transition-colors"
+              >
+                Go Back
+              </button>
+              {/* Confirm — proceed */}
+              <button
+                onClick={handleConfirmed}
+                className="flex-1 py-2.5 rounded-full bg-green-700 hover:bg-green-800
+                           text-white font-hind font-semibold text-sm transition-colors"
+              >
+                Yes, Complete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
