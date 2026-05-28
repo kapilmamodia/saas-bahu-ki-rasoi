@@ -27,7 +27,7 @@ export default function ConditionalShell({ children }: { children: React.ReactNo
           Made with ❤️ in our rasoi — Rajeshwari &amp; Veena Khandelwal
         </p>
         <p className="text-sm text-brand-muted mt-2">
-          📞 +91 99821 28866 &nbsp;·&nbsp; +91 98290 75457
+          📞 +91 XXX-XX-XXXX &nbsp;·&nbsp; +91 XXX-XX-XXXX
         </p>
       </footer>
     </>

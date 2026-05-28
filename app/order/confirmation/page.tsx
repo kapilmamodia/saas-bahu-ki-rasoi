@@ -205,8 +205,8 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
 
           <p className="font-hind text-sm text-brand-muted text-center">
             Questions? Call us — Rajeshwari{" "}
-            <a href="tel:+919982128866" className="text-brand-wood hover:text-brand-rust underline">
-              +91 99821 28866
+            <a href="tel:+91XXXXXXXXXX" className="text-brand-wood hover:text-brand-rust underline">
+              +91 XXX-XX-XXXX
             </a>{" "}
             · Veena{" "}
             <a href="tel:+919829075457" className="text-brand-wood hover:text-brand-rust underline">

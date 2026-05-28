@@ -91,8 +91,8 @@ export default function MockPayButton({ sessionId }: MockPayButtonProps) {
       {/* Contact fallback */}
       <p className="font-hind text-xs text-brand-muted text-center mt-3">
         Questions? Call Rajeshwari{" "}
-        <a href="tel:+919982128866" className="text-brand-wood hover:text-brand-rust underline">
-          +91 99821 28866
+        <a href="tel:+91XXXXXXXXXX" className="text-brand-wood hover:text-brand-rust underline">
+          +91 XXX-XX-XXXX
         </a>
       </p>
     </div>

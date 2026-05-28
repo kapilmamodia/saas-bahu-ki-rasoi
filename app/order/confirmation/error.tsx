@@ -18,8 +18,8 @@ export default function ConfirmationError() {
       <div className="font-hind text-brand-body">
         <p>
           Rajeshwari{" "}
-          <a href="tel:+919982128866" className="text-brand-wood hover:text-brand-rust underline">
-            +91 99821 28866
+          <a href="tel:+91XXXXXXXXXX" className="text-brand-wood hover:text-brand-rust underline">
+            +91 XXX-XX-XXXX
           </a>
         </p>
         <p>

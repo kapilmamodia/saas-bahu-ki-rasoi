@@ -53,7 +53,7 @@ export default async function HomePage() {
           <Link href="/menu" className="bg-brand-gold hover:bg-brand-rust text-brand-dark font-hind font-semibold px-8 py-3 rounded-full shadow-md transition-colors text-base">
             Browse Menu
           </Link>
-          <a href="tel:+919982128866" className="border-2 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-hind font-semibold px-8 py-3 rounded-full transition-colors text-base">
+          <a href="tel:+91XXXXXXXXXX" className="border-2 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-hind font-semibold px-8 py-3 rounded-full transition-colors text-base">
             📞 Call to Order
           </a>
         </div>

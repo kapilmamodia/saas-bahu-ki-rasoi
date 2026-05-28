@@ -161,7 +161,7 @@ export default function InvoiceTemplate({ order, orderItems }: InvoiceTemplatePr
             <Text style={styles.restaurantName}>Saas Bahu Ki Rasoi</Text>
             <Text style={styles.tagline}>Order Food For Any Mood</Text>
             <Text style={[styles.tagline, { marginTop: 4 }]}>
-              Rajeshwari: +91 99821 28866  ·  Veena: +91 98290 75457
+              Rajeshwari: +91 XXX-XX-XXXX  ·  Veena: +91 XXX-XX-XXXX
             </Text>
           </View>
           <Text style={styles.invoiceLabel}>INVOICE</Text>

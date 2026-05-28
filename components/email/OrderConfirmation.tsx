@@ -178,7 +178,7 @@ export default function OrderConfirmation({
                 Questions? We are always here!
               </Text>
               <Text style={{ color: "#7B4A1E", fontSize: "13px", margin: 0 }}>
-                Rajeshwari: +91 99821 28866 · Veena: +91 98290 75457
+                Rajeshwari: +91 XXX-XX-XXXX · Veena: +91 XXX-XX-XXXX
               </Text>
             </Section>
           </Section>
