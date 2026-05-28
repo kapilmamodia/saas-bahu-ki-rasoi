@@ -10,7 +10,6 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
 } from "@react-pdf/renderer";
 import { Order, OrderItem } from "@/types";
 

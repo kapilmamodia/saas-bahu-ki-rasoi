@@ -10,7 +10,7 @@
  *   4. Save signed URL to orders.invoice_url in DB
  *   5. Send order confirmation email via Resend with the signed URL
  */
-import { renderToBuffer, Document } from "@react-pdf/renderer";
+import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement, ReactElement } from "react";
 import { DocumentProps } from "@react-pdf/renderer";
 import { Order, OrderItem } from "@/types";
