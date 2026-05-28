@@ -209,8 +209,8 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
               +91 XXX-XX-XXXX
             </a>{" "}
             · Veena{" "}
-            <a href="tel:+919829075457" className="text-brand-wood hover:text-brand-rust underline">
-              +91 98290 75457
+            <a href="tel:+91XXXXXXXXXX" className="text-brand-wood hover:text-brand-rust underline">
+              +91 XXX-XX-XXXX
             </a>
           </p>
         </div>
