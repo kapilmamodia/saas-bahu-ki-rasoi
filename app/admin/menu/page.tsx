@@ -15,6 +15,10 @@ interface MenuItemWithCategory extends MenuItem {
 /** Fetch all non-deleted menu items with category */
 async function getMenuItems(): Promise<MenuItemWithCategory[]> {
   try {
+    // Log env var presence to help debug Vercel missing env issues
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error("[AdminMenu] MISSING env var: SUPABASE_SERVICE_ROLE_KEY — add it in Vercel dashboard");
+    }
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("menu_items")
