@@ -35,6 +35,14 @@ export default function Navbar() {
             Menu
           </Link>
 
+          {/* My Orders — between Menu and Cart */}
+          <Link
+            href="/orders"
+            className="font-hind text-sm md:text-base hover:text-brand-gold transition-colors hidden sm:block"
+          >
+            My Orders
+          </Link>
+
           {/* Cart icon with item count badge */}
           <Link href="/cart" className="relative" aria-label="View cart">
             {/* Gold-tinted cart icon */}
@@ -45,7 +53,6 @@ export default function Navbar() {
             {/* Badge — only shown when cart has items */}
             {itemCount > 0 && (
               <span
-                // Terracotta badge, positioned top-right of icon
                 className="absolute -top-2 -right-2 bg-brand-rust text-white text-xs
                            font-bold rounded-full w-5 h-5 flex items-center justify-center
                            font-hind"
