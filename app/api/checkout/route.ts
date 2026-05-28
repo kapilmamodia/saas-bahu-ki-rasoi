@@ -24,6 +24,8 @@ interface CheckoutBody {
   customerEmail: string;
   customerName: string;
   couponCode?: string;
+  deliveryType?: "pickup" | "delivery";
+  deliveryAddress?: string | null;
 }
 
 /**
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse and validate incoming request body
     const body: CheckoutBody = await request.json();
-    const { items, customerEmail, customerName, couponCode } = body;
+    const { items, customerEmail, customerName, couponCode, deliveryType, deliveryAddress } = body;
 
     // Basic validation — must have items and a customer email
     if (!items || items.length === 0) {
@@ -83,13 +85,15 @@ export async function POST(request: NextRequest) {
         coupon_code: couponCode ?? null,
         tax_cents: taxCents,
         total_cents: totalCents,
+        delivery_type: deliveryType ?? "pickup",
+        delivery_address: deliveryAddress ?? null,
       })
       .select()
       .single();
 
     if (orderError || !order) {
-      console.error("[checkout] Failed to create order:", orderError);
-      return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+      console.error("[checkout] Failed to create order:", JSON.stringify(orderError));
+      return NextResponse.json({ error: `Failed to create order: ${orderError?.message ?? "unknown"}` }, { status: 500 });
     }
 
     // ── Save order line items (price/name snapshotted) ───────────────────────

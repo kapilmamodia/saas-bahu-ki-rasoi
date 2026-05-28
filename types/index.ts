@@ -46,6 +46,9 @@ export interface Order {
   tax_cents: number;
   total_cents: number;
   invoice_url: string | null;   // Supabase Storage signed URL for PDF
+  /** pickup = customer collects; delivery = we deliver to address */
+  delivery_type: "pickup" | "delivery";
+  delivery_address: string | null;  // required only when delivery_type = "delivery"
   created_at: string;
   completed_at: string | null;  // set when admin marks order as completed
 }

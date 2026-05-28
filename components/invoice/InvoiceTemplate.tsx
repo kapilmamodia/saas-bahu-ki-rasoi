@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   metaBlock: { flex: 1 },
-  metaLabel: { fontSize: 8, color: COLORS.muted, marginBottom: 2, textTransform: "uppercase" },
+  metaLabel: { fontSize: 8, color: COLORS.muted, marginBottom: 1, marginTop: 0, textTransform: "uppercase" },
   metaValue: { fontSize: 11, color: COLORS.body, fontFamily: "Helvetica-Bold" },
   metaValueLight: { fontSize: 10, color: COLORS.body },
   // Items table
@@ -173,12 +173,24 @@ export default function InvoiceTemplate({ order, orderItems }: InvoiceTemplatePr
             <Text style={styles.metaLabel}>Bill To</Text>
             <Text style={styles.metaValue}>{order.customer_name}</Text>
             <Text style={styles.metaValueLight}>{order.customer_email}</Text>
+            {/* Delivery type */}
+            <Text style={[styles.metaLabel, { marginTop: 8 }]}>Order Type</Text>
+            <Text style={styles.metaValueLight}>
+              {order.delivery_type === "delivery" ? "Home Delivery" : "Self Pickup"}
+            </Text>
+            {/* Delivery address — only shown when applicable */}
+            {order.delivery_type === "delivery" && order.delivery_address && (
+              <>
+                <Text style={[styles.metaLabel, { marginTop: 4 }]}>Delivery Address</Text>
+                <Text style={styles.metaValueLight}>{order.delivery_address}</Text>
+              </>
+            )}
           </View>
           <View style={[styles.metaBlock, { alignItems: "flex-end" }]}>
             <Text style={styles.metaLabel}>Invoice No.</Text>
-            <Text style={styles.metaValue}>{order.id.slice(0, 8).toUpperCase()}</Text>
+            <Text style={[styles.metaValue, { marginBottom: 6 }]}>{order.id.slice(0, 8).toUpperCase()}</Text>
             <Text style={styles.metaLabel}>Date</Text>
-            <Text style={styles.metaValueLight}>{orderDate}</Text>
+            <Text style={[styles.metaValueLight, { marginBottom: 6 }]}>{orderDate}</Text>
             <Text style={styles.metaLabel}>Status</Text>
             <Text style={[styles.metaValue, { color: "#16a34a" }]}>PAID</Text>
           </View>

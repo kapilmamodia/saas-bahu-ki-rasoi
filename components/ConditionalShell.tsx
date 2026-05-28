@@ -3,6 +3,7 @@
 // Admin pages have their own sidebar layout via app/admin/layout.tsx.
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 /**
  * Wraps children with the public Navbar and Footer,
@@ -10,26 +11,15 @@ import Navbar from "@/components/Navbar";
  */
 export default function ConditionalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // Hide public nav/footer on all admin routes (they have their own layout)
   const isAdmin = pathname.startsWith("/admin");
 
-  if (isAdmin) {
-    return <>{children}</>;
-  }
+  if (isAdmin) return <>{children}</>;
 
   return (
     <>
       <Navbar />
       <main>{children}</main>
-      {/* Public footer */}
-      <footer className="bg-brand-dark text-brand-on-dark py-8 px-4 text-center">
-        <p className="font-caveat text-lg">
-          Made with ❤️ in our rasoi — Rajeshwari &amp; Veena Khandelwal
-        </p>
-        <p className="text-sm text-brand-muted mt-2">
-          📞 +91 XXX-XX-XXXX &nbsp;·&nbsp; +91 XXX-XX-XXXX
-        </p>
-      </footer>
+      <Footer />
     </>
   );
 }

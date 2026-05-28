@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Minus, Plus, Trash2, ShoppingBag, Tag, X } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag, Tag, X, MapPin, PackageCheck } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { validateCoupon } from "@/lib/actions/couponActions";
 import type { CouponValidationResult } from "@/types";
@@ -35,6 +35,10 @@ export default function CartPage() {
   const [customerEmail, setCustomerEmail] = useState("");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  // ── Delivery type state ────────────────────────────────────────────────────
+  const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery">("pickup");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
 
   // ── Coupon state ──────────────────────────────────────────────────────────
   const [couponInput, setCouponInput] = useState("");
@@ -69,6 +73,10 @@ export default function CartPage() {
       setCheckoutError("Please enter your email address.");
       return;
     }
+    if (deliveryType === "delivery" && !deliveryAddress.trim()) {
+      setCheckoutError("Please enter your delivery address.");
+      return;
+    }
     try {
       setCheckoutLoading(true);
       setCheckoutError(null);
@@ -80,8 +88,9 @@ export default function CartPage() {
           items,
           customerEmail,
           customerName,
-          // Pass applied coupon code so server can record + increment usage
           couponCode: couponResult?.valid ? couponResult.coupon?.code : undefined,
+          deliveryType,
+          deliveryAddress: deliveryType === "delivery" ? deliveryAddress.trim() : null,
         }),
       });
 
@@ -97,7 +106,8 @@ export default function CartPage() {
       clearCart();
       router.push(data.path);
     } catch (err) {
-      setCheckoutError("Something went wrong. Please try again.");
+      const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setCheckoutError(msg);
       console.error("[CartPage] checkout error:", err);
     } finally {
       setCheckoutLoading(false);
@@ -301,6 +311,67 @@ export default function CartPage() {
         <div className="flex justify-between font-playfair text-xl text-brand-heading font-semibold mb-6">
           <span>Total</span>
           <span className="text-brand-gold">{formatPrice(grandTotalCents)}</span>
+        </div>
+
+        {/* ── Delivery / Pickup selector ────────────────────────────── */}
+        <div className="mb-4">
+          <p className="font-hind text-sm text-brand-muted mb-2">
+            How would you like to receive your order?
+          </p>
+          {/* Toggle buttons */}
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <button
+              type="button"
+              onClick={() => setDeliveryType("pickup")}
+              className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2
+                          font-hind font-semibold text-sm transition-all
+                          ${deliveryType === "pickup"
+                            ? "bg-brand-wood border-brand-wood text-white shadow-md"
+                            : "bg-brand-bg border-brand-wood/30 text-brand-body hover:border-brand-wood/60"}`}
+            >
+              <PackageCheck size={16} />
+              Self Pickup
+            </button>
+            <button
+              type="button"
+              onClick={() => setDeliveryType("delivery")}
+              className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2
+                          font-hind font-semibold text-sm transition-all
+                          ${deliveryType === "delivery"
+                            ? "bg-brand-wood border-brand-wood text-white shadow-md"
+                            : "bg-brand-bg border-brand-wood/30 text-brand-body hover:border-brand-wood/60"}`}
+            >
+              <MapPin size={16} />
+              Home Delivery
+            </button>
+          </div>
+
+          {/* Info note */}
+          {deliveryType === "pickup" && (
+            <p className="font-caveat text-brand-muted text-sm text-center">
+              📍 Collect your order from our kitchen — we&apos;ll let you know when it&apos;s ready!
+            </p>
+          )}
+
+          {/* Delivery address field — shown only when delivery selected */}
+          {deliveryType === "delivery" && (
+            <div>
+              <label htmlFor="delivery-address" className="font-hind text-sm text-brand-muted block mb-1">
+                Delivery Address <span className="text-brand-rust">*</span>
+              </label>
+              <textarea
+                id="delivery-address"
+                rows={2}
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                placeholder="House no., Street, Area, City — Pincode"
+                className="w-full border border-brand-wood/30 rounded-lg px-3 py-2
+                           font-hind text-sm text-brand-body bg-brand-bg resize-none
+                           placeholder:text-brand-muted/60 focus:outline-none
+                           focus:ring-2 focus:ring-brand-wood/40"
+              />
+            </div>
+          )}
         </div>
 
         {/* ── Customer info fields ──────────────────────────────────── */}

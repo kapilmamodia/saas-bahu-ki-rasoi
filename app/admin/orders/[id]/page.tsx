@@ -92,6 +92,18 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           <span className="text-brand-body font-medium">{typedOrder.customer_name || "—"}</span>
           <span className="text-brand-muted">Email</span>
           <span className="text-brand-body">{typedOrder.customer_email}</span>
+          {/* Delivery type */}
+          <span className="text-brand-muted">Order Type</span>
+          <span className="text-brand-body font-semibold">
+            {typedOrder.delivery_type === "delivery" ? "🛵 Home Delivery" : "📍 Self Pickup"}
+          </span>
+          {/* Delivery address */}
+          {typedOrder.delivery_type === "delivery" && typedOrder.delivery_address && (
+            <>
+              <span className="text-brand-muted">Address</span>
+              <span className="text-brand-body">{typedOrder.delivery_address}</span>
+            </>
+          )}
           <span className="text-brand-muted">Ordered at</span>
           <span className="text-brand-body">{orderDate}</span>
           {/* Show completed timestamp if available */}

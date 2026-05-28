@@ -28,18 +28,17 @@ export default function Navbar() {
         {/* Navigation links + cart */}
         <div className="flex items-center gap-6">
           {/* Menu link */}
-          <Link
-            href="/menu"
-            className="font-hind text-sm md:text-base hover:text-brand-gold transition-colors"
-          >
+          <Link href="/menu" className="font-hind text-sm md:text-base hover:text-brand-gold transition-colors">
             Menu
           </Link>
 
+          {/* About Us link */}
+          <Link href="/about" className="font-hind text-sm md:text-base hover:text-brand-gold transition-colors hidden sm:block">
+            About Us
+          </Link>
+
           {/* My Orders — between Menu and Cart */}
-          <Link
-            href="/orders"
-            className="font-hind text-sm md:text-base hover:text-brand-gold transition-colors hidden sm:block"
-          >
+          <Link href="/orders" className="font-hind text-sm md:text-base hover:text-brand-gold transition-colors hidden sm:block">
             My Orders
           </Link>
 

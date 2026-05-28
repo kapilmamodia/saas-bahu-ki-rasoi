@@ -115,6 +115,20 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
           <span className="text-brand-muted">Email</span>
           <span>{typedOrder.customer_email}</span>
         </div>
+        {/* Delivery type */}
+        <div className="flex justify-between font-hind text-sm text-brand-body mb-1">
+          <span className="text-brand-muted">Order Type</span>
+          <span className="flex items-center gap-1 font-semibold">
+            {typedOrder.delivery_type === "delivery" ? "🛵 Home Delivery" : "📍 Self Pickup"}
+          </span>
+        </div>
+        {/* Delivery address — only shown when delivery */}
+        {typedOrder.delivery_type === "delivery" && typedOrder.delivery_address && (
+          <div className="flex justify-between font-hind text-sm text-brand-body mb-1">
+            <span className="text-brand-muted">Address</span>
+            <span className="text-right max-w-xs">{typedOrder.delivery_address}</span>
+          </div>
+        )}
         {/* Status badge */}
         <div className="flex justify-between font-hind text-sm text-brand-body">
           <span className="text-brand-muted">Status</span>
