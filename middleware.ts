@@ -1,17 +1,26 @@
 // Runs on every request matching /admin/* — refreshes the Supabase auth session
 // and redirects unauthenticated users away from protected admin routes.
+// Login page lives at app/(auth)/admin/login — outside /admin folder — so it
+// never gets caught by the admin layout auth check.
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 /**
  * Next.js middleware — protects /admin routes.
  * Unauthenticated users are redirected to /admin/login.
+ * The login page itself is at app/(auth)/admin/login/page.tsx so it is
+ * NOT wrapped by the admin layout and cannot cause an infinite redirect.
  */
 export async function middleware(request: NextRequest) {
-  // Start with a pass-through response so we can attach Set-Cookie headers
+  const { pathname } = request.nextUrl;
+
+  // Always allow /admin/login and /admin/logout through — no auth needed
+  if (pathname === "/admin/login" || pathname.startsWith("/admin/logout")) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
-  // Create a server-side Supabase client that reads/writes cookies on the request
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -28,17 +37,11 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session if expired — required for Server Component auth to work
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Refresh session if expired
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Redirect unauthenticated users trying to access /admin (except login page)
-  if (
-    request.nextUrl.pathname.startsWith("/admin") &&
-    !request.nextUrl.pathname.startsWith("/admin/login") &&
-    !user
-  ) {
+  // Redirect unauthenticated users away from /admin/*
+  if (!user) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
@@ -46,7 +49,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Only run this middleware on /admin routes
   matcher: ["/admin/:path*"],
 };
-
