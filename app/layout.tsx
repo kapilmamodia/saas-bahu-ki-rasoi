@@ -1,8 +1,10 @@
+// Root layout — applies brand fonts, CSS custom properties, and CartProvider.
+// Admin routes render their own layout shell — public Navbar/Footer are hidden for them.
 import type { Metadata } from "next";
 import { Yatra_One, Playfair_Display, Hind, Caveat } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/hooks/useCart";
-import Navbar from "@/components/Navbar";
+import ConditionalShell from "@/components/ConditionalShell";
 
 // ── Google Fonts ─────────────────────────────────────────────────────────────
 /** Hero / display headings — hand-lettered warmth */
@@ -56,17 +58,8 @@ export default function RootLayout({
       >
         {/* Cart context wraps entire app so any component can access cart state */}
         <CartProvider>
-          <Navbar />
-          <main>{children}</main>
-          {/* Footer */}
-          <footer className="bg-brand-dark text-brand-on-dark py-8 px-4 text-center">
-            <p className="font-caveat text-lg">
-              Made with ❤️ in our rasoi — Rajeshwari &amp; Veena Khandelwal
-            </p>
-            <p className="text-sm text-brand-muted mt-2">
-              📞 +91 99821 28866 &nbsp;·&nbsp; +91 98290 75457
-            </p>
-          </footer>
+          {/* ConditionalShell hides public Navbar/Footer on /admin routes */}
+          <ConditionalShell>{children}</ConditionalShell>
         </CartProvider>
       </body>
     </html>
