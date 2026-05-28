@@ -5,9 +5,11 @@ import MenuCard from "@/components/menu/MenuCard";
 import type { MenuItem } from "@/types";
 
 /**
- * ISR: revalidate every 60 seconds so admin changes to specials appear quickly.
+ * Force dynamic rendering — never pre-render at build time with empty data.
+ * Data is fetched fresh on every request from Supabase.
  */
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 /** Fetch today's specials — returns empty array on error */
 async function getSpecials(): Promise<MenuItem[]> {

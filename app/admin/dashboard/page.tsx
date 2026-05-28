@@ -8,6 +8,9 @@ function formatPrice(paise: number) {
   return `₹${(paise / 100).toLocaleString("en-IN")}`;
 }
 
+/** Force dynamic rendering — fetches live data on every request */
+export const dynamic = "force-dynamic";
+
 /** Fetch today's order stats */
 async function getDashboardStats() {
   try {

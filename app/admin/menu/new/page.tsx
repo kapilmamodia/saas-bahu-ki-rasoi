@@ -19,6 +19,7 @@ async function getCategories(): Promise<Category[]> {
   }
 }
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Add Menu Item — Admin" };
 
 /** Add new item page */

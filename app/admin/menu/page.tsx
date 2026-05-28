@@ -8,6 +8,9 @@ import type { MenuItem, Category } from "@/types";
 import { Plus } from "lucide-react";
 import DeleteButton from "@/components/admin/DeleteButton";
 
+/** Force dynamic rendering — always fetch live menu data */
+export const dynamic = "force-dynamic";
+
 interface MenuItemWithCategory extends MenuItem {
   category: Category;
 }

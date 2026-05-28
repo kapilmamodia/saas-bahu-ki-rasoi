@@ -4,8 +4,11 @@ import { createPublicClient } from "@/lib/supabase/public";
 import MenuGrid from "@/components/menu/MenuGrid";
 import type { Category, MenuItem } from "@/types";
 
+/** Force dynamic rendering — never pre-render at build time with empty data */
+export const dynamic = "force-dynamic";
+
 /** ISR: revalidate every 60 seconds */
-export const revalidate = 60;
+export const revalidate = 0;
 
 export const metadata = {
   title: "Menu — Saas Bahu Ki Rasoi",

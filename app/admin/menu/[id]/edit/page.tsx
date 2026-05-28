@@ -29,6 +29,7 @@ async function getItemAndCategories(id: string): Promise<{ item: MenuItem; categ
   }
 }
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: "Edit Menu Item — Admin" };
 
 /** Edit item page */
