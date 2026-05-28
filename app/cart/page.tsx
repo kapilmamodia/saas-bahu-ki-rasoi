@@ -1,6 +1,8 @@
 "use client";
 // Cart page — shows items in the cart with quantity controls and order totals.
-// "Proceed to Payment" will POST to /api/checkout (Phase 3).
+// Posts to /api/checkout which creates a pending order and redirects to confirmation.
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
@@ -23,7 +25,49 @@ function formatPrice(paise: number): string {
 
 /** Cart page component */
 export default function CartPage() {
-  const { items, updateQuantity, removeItem, totalCents } = useCart();
+  const { items, updateQuantity, removeItem, totalCents, clearCart } = useCart();
+  const router = useRouter();
+
+  // Customer info for the order
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  /** POST to /api/checkout and redirect to the confirmation page */
+  const handleCheckout = async () => {
+    if (!customerEmail.trim()) {
+      setCheckoutError("Please enter your email address.");
+      return;
+    }
+    try {
+      setCheckoutLoading(true);
+      setCheckoutError(null);
+
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items, customerEmail, customerName }),
+      });
+
+      const data: { url?: string; path?: string; error?: string } = await res.json();
+
+      if (!res.ok || !data.path) {
+        throw new Error(data.error ?? "Checkout failed");
+      }
+
+      // Clear the cart then navigate using the RELATIVE path.
+      // router.push() in Next.js App Router must receive a relative path for
+      // same-origin navigation — passing an absolute URL can silently fail on Vercel.
+      clearCart();
+      router.push(data.path);
+    } catch (err) {
+      setCheckoutError("Something went wrong. Please try again.");
+      console.error("[CartPage] checkout error:", err);
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
 
   // Compute tax and grand total from cart subtotal
   const taxCents = Math.round(totalCents * TAX_RATE);
@@ -158,21 +202,67 @@ export default function CartPage() {
           <span className="text-brand-gold">{formatPrice(grandTotalCents)}</span>
         </div>
 
-        {/* Proceed to Payment — disabled (Phase 3 will wire Stripe) */}
+        {/* ── Customer info fields ──────────────────────────────────── */}
+        <div className="flex flex-col gap-3 mb-4">
+          {/* Name field */}
+          <div>
+            <label htmlFor="customer-name" className="font-hind text-sm text-brand-muted block mb-1">
+              Your Name
+            </label>
+            <input
+              id="customer-name"
+              type="text"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              placeholder="e.g. Priya Sharma"
+              className="w-full border border-brand-wood/30 rounded-lg px-3 py-2
+                         font-hind text-brand-body bg-brand-bg placeholder:text-brand-muted/60
+                         focus:outline-none focus:ring-2 focus:ring-brand-wood/40"
+            />
+          </div>
+          {/* Email field */}
+          <div>
+            <label htmlFor="customer-email" className="font-hind text-sm text-brand-muted block mb-1">
+              Email Address <span className="text-brand-rust">*</span>
+            </label>
+            <input
+              id="customer-email"
+              type="email"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              placeholder="e.g. priya@example.com"
+              className="w-full border border-brand-wood/30 rounded-lg px-3 py-2
+                         font-hind text-brand-body bg-brand-bg placeholder:text-brand-muted/60
+                         focus:outline-none focus:ring-2 focus:ring-brand-wood/40"
+            />
+          </div>
+        </div>
+
+        {/* Error message */}
+        {checkoutError && (
+          <p className="font-hind text-sm text-red-600 mb-3">{checkoutError}</p>
+        )}
+
+        {/* Proceed to Payment button */}
         <button
-          disabled
-          title="Payment integration coming soon"
+          onClick={handleCheckout}
+          disabled={checkoutLoading}
+          aria-label="Proceed to payment"
           className="w-full flex items-center justify-center gap-2 bg-brand-wood
                      hover:bg-brand-rust text-white font-hind font-semibold py-3
                      rounded-full shadow-md transition-colors
                      disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ShoppingBag size={18} />
-          Proceed to Payment
+          {checkoutLoading ? (
+            <span className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+          ) : (
+            <ShoppingBag size={18} />
+          )}
+          {checkoutLoading ? "Processing..." : "Proceed to Payment"}
         </button>
 
         <p className="text-center font-caveat text-brand-muted text-sm mt-3">
-          Online payment coming soon — call us to confirm your order 📞
+          🧪 Mock payment mode — no real charges
         </p>
       </div>
 

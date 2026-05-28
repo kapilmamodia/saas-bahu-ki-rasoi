@@ -79,6 +79,12 @@
 - User-facing errors must show a friendly message (never expose raw error strings)
 - Log errors server-side with `console.error("[context]", error)`
 
+## Git — strict rules
+- **NEVER run `git commit`, `git push`, `git add`, or any git write command via CLI**
+- The user handles all git commits and pushes manually — do not suggest or execute them
+- You may run read-only git commands (e.g. `git status`, `git diff`, `git log`) only if explicitly asked
+- Do not remind the user to commit or push — they will do it themselves
+
 ## Phase Workflow — how to work through the project
 
 When the user says "implement Phase N":

@@ -6,14 +6,6 @@ on:
   pull_request:
     branches: [main, master]
 
-env:
-  # Available to ALL jobs in this workflow
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-  NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
-  TAX_RATE: ${{ secrets.TAX_RATE }}
-
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -34,8 +26,16 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
+      # Build needs NEXT_PUBLIC_* vars at build time — pass them explicitly
       - name: Build
         run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Use a placeholder for CI builds — real value is set in Vercel project settings
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL || 'https://saas-bahu-ki-rasoi.vercel.app' }}
+          TAX_RATE: ${{ secrets.TAX_RATE || '0.18' }}
 
   deploy-preview:
     needs: ci
@@ -52,6 +52,8 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
+      # vercel pull downloads the project's env vars from Vercel (including preview ones)
+      # so NEXT_PUBLIC_BASE_URL will be the preview URL set in Vercel dashboard
       - name: Deploy Preview to Vercel
         run: |
           vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
@@ -84,3 +86,5 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+
