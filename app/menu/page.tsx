@@ -30,6 +30,7 @@ async function getMenuItems(): Promise<MenuItemWithCategory[]> {
       .from("menu_items")
       .select("*, category:categories(id, name, sort_order)")
       .is("deleted_at", null)
+      .eq("is_available", true)       // only show available items
       .order("name", { ascending: true });
 
     if (error) {
