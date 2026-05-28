@@ -26,16 +26,17 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
-      # Build needs NEXT_PUBLIC_* vars at build time — pass them explicitly
+      # Build needs ALL env vars at build time — NEXT_PUBLIC_* are baked into the bundle
       - name: Build
         run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          # Use a placeholder for CI builds — real value is set in Vercel project settings
-          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL || 'https://saas-bahu-ki-rasoi.vercel.app' }}
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
           TAX_RATE: ${{ secrets.TAX_RATE || '0.18' }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
 
   deploy-preview:
     needs: ci
