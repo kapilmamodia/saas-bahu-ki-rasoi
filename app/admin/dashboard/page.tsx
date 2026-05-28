@@ -1,7 +1,8 @@
-// Admin dashboard — summary stats and recent orders.
+// Admin dashboard — summary stats and filterable orders table.
 // Server Component: fetches data using the service role client.
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
+import OrdersTable, { OrderRow } from "@/components/admin/OrdersTable";
 
 /** Format paise to rupees */
 function formatPrice(paise: number) {
@@ -11,30 +12,28 @@ function formatPrice(paise: number) {
 /** Force dynamic rendering — fetches live data on every request */
 export const dynamic = "force-dynamic";
 
-/** Fetch today's order stats */
+/** Fetch dashboard stats and all orders */
 async function getDashboardStats() {
   try {
     const supabase = createAdminClient();
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
 
-    // Orders created today
+    // Today's orders for stats
     const { data: todayOrders, error: ordersError } = await supabase
       .from("orders")
-      .select("id, total_cents, status, customer_name, customer_email, created_at")
-      .gte("created_at", todayStart.toISOString())
-      .order("created_at", { ascending: false });
+      .select("id, total_cents, status")
+      .gte("created_at", todayStart.toISOString());
 
     if (ordersError) console.error("[Dashboard] Orders error:", ordersError);
 
-    // Last 20 orders overall
-    const { data: recentOrders, error: recentError } = await supabase
+    // All orders for the filterable table
+    const { data: allOrders, error: allError } = await supabase
       .from("orders")
-      .select("id, customer_name, customer_email, total_cents, status, created_at")
-      .order("created_at", { ascending: false })
-      .limit(20);
+      .select("id, customer_name, customer_email, total_cents, status, created_at, completed_at, invoice_url")
+      .order("created_at", { ascending: false });
 
-    if (recentError) console.error("[Dashboard] Recent orders error:", recentError);
+    if (allError) console.error("[Dashboard] All orders error:", allError);
 
     const orders = todayOrders ?? [];
     const totalRevenue = orders
@@ -44,24 +43,17 @@ async function getDashboardStats() {
     return {
       ordersToday: orders.length,
       revenueToday: totalRevenue,
-      recentOrders: recentOrders ?? [],
+      allOrders: (allOrders ?? []) as OrderRow[],
     };
   } catch (err) {
     console.error("[Dashboard] Unexpected error:", err);
-    return { ordersToday: 0, revenueToday: 0, recentOrders: [] };
+    return { ordersToday: 0, revenueToday: 0, allOrders: [] };
   }
-}
-
-/** Status badge colour */
-function statusColor(status: string) {
-  if (status === "paid") return "bg-brand-sage/20 text-brand-sage";
-  if (status === "refunded") return "bg-brand-rust/20 text-brand-rust";
-  return "bg-brand-gold/20 text-brand-gold"; // pending
 }
 
 /** Admin dashboard page */
 export default async function AdminDashboardPage() {
-  const { ordersToday, revenueToday, recentOrders } = await getDashboardStats();
+  const { ordersToday, revenueToday, allOrders } = await getDashboardStats();
 
   return (
     <div>
@@ -71,101 +63,22 @@ export default async function AdminDashboardPage() {
 
       {/* ── Summary cards ──────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-        <StatCard
-          emoji="📦"
-          label="Orders Today"
-          value={String(ordersToday)}
-        />
-        <StatCard
-          emoji="💰"
-          label="Revenue Today"
-          value={formatPrice(revenueToday)}
-        />
-        <StatCard
-          emoji="🍽️"
-          label="Menu"
-          value="Manage"
-          href="/admin/menu"
-        />
+        <StatCard emoji="📦" label="Orders Today" value={String(ordersToday)} />
+        <StatCard emoji="💰" label="Revenue Today" value={formatPrice(revenueToday)} />
+        <StatCard emoji="🍽️" label="Menu" value="Manage" href="/admin/menu" />
       </div>
 
-      {/* ── Recent orders table ─────────────────────────────────────────── */}
-      <div className="bg-brand-card border border-brand-wood/25 rounded-xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-brand-wood/15 flex items-center justify-between">
-          <h2 className="font-playfair text-xl text-brand-heading">Recent Orders</h2>
-          <span className="font-caveat text-brand-muted text-sm">Last 20</span>
-        </div>
-
-        {recentOrders.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-4xl mb-3">🛒</p>
-            <p className="font-playfair text-brand-heading">No orders yet today — they&apos;re coming!</p>
-          </div>
-        ) : (
-          /* Horizontally scrollable on mobile */
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm font-hind">
-              <thead className="bg-brand-bg text-brand-muted uppercase text-xs">
-                <tr>
-                  <th className="px-4 py-3 text-left">Order ID</th>
-                  <th className="px-4 py-3 text-left">Customer</th>
-                  <th className="px-4 py-3 text-left">Total</th>
-                  <th className="px-4 py-3 text-left">Status</th>
-                  <th className="px-4 py-3 text-left">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentOrders.map((order: {
-                  id: string;
-                  customer_name: string;
-                  customer_email: string;
-                  total_cents: number;
-                  status: string;
-                  created_at: string;
-                }) => (
-                  <tr key={order.id} className="border-t border-brand-wood/10 hover:bg-brand-bg/50">
-                    <td className="px-4 py-3 text-brand-muted font-mono text-xs">
-                      {order.id.slice(0, 8)}…
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-brand-heading font-medium">{order.customer_name || "—"}</p>
-                      <p className="text-brand-muted text-xs">{order.customer_email}</p>
-                    </td>
-                    <td className="px-4 py-3 text-brand-gold font-semibold">
-                      {formatPrice(order.total_cents)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`font-caveat text-sm px-2 py-0.5 rounded-full ${statusColor(order.status)}`}>
-                        {order.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-brand-muted">
-                      {new Date(order.created_at).toLocaleDateString("en-IN", {
-                        day: "numeric", month: "short", hour: "2-digit", minute: "2-digit",
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {/* ── Filterable orders table (Client Component) ──────────────────── */}
+      <OrdersTable orders={allOrders} />
     </div>
   );
 }
 
 /** Small summary stat card */
 function StatCard({
-  emoji,
-  label,
-  value,
-  href,
+  emoji, label, value, href,
 }: {
-  emoji: string;
-  label: string;
-  value: string;
-  href?: string;
+  emoji: string; label: string; value: string; href?: string;
 }) {
   const content = (
     <div className="bg-brand-card border border-brand-wood/25 rounded-xl p-5 shadow-sm

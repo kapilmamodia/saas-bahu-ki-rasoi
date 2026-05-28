@@ -39,12 +39,13 @@ export interface Order {
   stripe_session_id: string;
   customer_email: string;
   customer_name: string;
-  status: "pending" | "paid" | "refunded";
+  status: "pending" | "paid" | "completed" | "refunded";
   subtotal_cents: number;
   tax_cents: number;
   total_cents: number;
   invoice_url: string | null;   // Supabase Storage signed URL for PDF
   created_at: string;
+  completed_at: string | null;  // set when admin marks order as completed
 }
 
 // ─── Order Line Item ─────────────────────────────────────────────────────────
