@@ -47,10 +47,6 @@ export default async function HomePage() {
         <p className="font-playfair text-xl md:text-2xl text-brand-gold italic mb-6">
           Order Food For Any Mood
         </p>
-        <p className="font-hind text-brand-on-dark/80 max-w-xl mx-auto mb-8 text-base md:text-lg">
-          Home-cooked Indian food made with love by Rajeshwari &amp; Veena Khandelwal.
-          Individual orders, Kitty Party and Get Together catering — we&apos;ve got you covered.
-        </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/menu" className="bg-brand-gold hover:bg-brand-rust text-brand-dark font-hind font-semibold px-8 py-3 rounded-full shadow-md transition-colors text-base">
             Browse Menu
