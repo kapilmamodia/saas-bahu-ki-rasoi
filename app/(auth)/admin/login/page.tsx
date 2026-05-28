@@ -39,7 +39,9 @@ export default function AdminLoginPage() {
       router.refresh();
     } catch (err) {
       console.error("[AdminLogin] Unexpected error:", err);
-      setError("Something went wrong. Please try again.");
+      const message = err instanceof Error ? err.message : String(err);
+      // Surface the real error — helps diagnose missing env vars on Vercel
+      setError(`Something went wrong: ${message}`);
     } finally {
       setLoading(false);
     }
