@@ -3,6 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Cart scrollable item list — thin warm scrollbar ─────────────────────── */
+.cart-scroll::-webkit-scrollbar        { width: 4px; }
+.cart-scroll::-webkit-scrollbar-track  { background: transparent; }
+.cart-scroll::-webkit-scrollbar-thumb  { background: #C0622A55; border-radius: 99px; }
+.cart-scroll::-webkit-scrollbar-thumb:hover { background: #C0622A99; }
+
 /* ── Brand CSS Custom Properties ─────────────────────────────────────────── */
 :root {
   /* Backgrounds */
