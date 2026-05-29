@@ -50,7 +50,7 @@ export default function OrderCancelled({ order, orderItems }: OrderCancelledProp
             </Heading>
             <Text style={{ color: "#4A3728", fontSize: "14px", margin: "0 0 20px" }}>
               Namaste <strong>{order.customer_name}</strong>, we&apos;re sorry to inform you that
-              your order <strong>#{order.id.slice(0, 8).toUpperCase()}</strong> has been cancelled.
+              your order <strong>#{order.order_number}</strong> has been cancelled.
               If a payment was made, a refund will be processed shortly.
             </Text>
 

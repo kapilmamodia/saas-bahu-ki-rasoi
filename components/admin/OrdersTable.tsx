@@ -12,6 +12,7 @@ import { Search, X, CalendarDays } from "lucide-react";
 /** Shape of a single order row passed from the server */
 export interface OrderRow {
   id: string;
+  order_number: number | null;
   customer_name: string;
   customer_email: string;
   total_cents: number;
@@ -178,7 +179,7 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                 <tr key={order.id} className="border-t border-brand-wood/10 hover:bg-brand-bg/50">
                   {/* Order ID */}
                   <td className="px-4 py-3 text-brand-muted font-mono text-xs">
-                    {order.id.slice(0, 8).toUpperCase()}
+                    #{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
                   </td>
 
                   {/* Customer name + email */}

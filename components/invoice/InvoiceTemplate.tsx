@@ -152,7 +152,7 @@ export default function InvoiceTemplate({ order, orderItems }: InvoiceTemplatePr
   });
 
   return (
-    <Document title={`Invoice — Saas Bahu Ki Rasoi — ${order.id.slice(0, 8).toUpperCase()}`}>
+    <Document title={`Invoice — Saas Bahu Ki Rasoi — #${order.order_number}`}>
       <Page size="A4" style={styles.page}>
 
         {/* ── Header ───────────────────────────────────────────────────────── */}
@@ -188,7 +188,7 @@ export default function InvoiceTemplate({ order, orderItems }: InvoiceTemplatePr
           </View>
           <View style={[styles.metaBlock, { alignItems: "flex-end" }]}>
             <Text style={styles.metaLabel}>Invoice No.</Text>
-            <Text style={[styles.metaValue, { marginBottom: 6 }]}>{order.id.slice(0, 8).toUpperCase()}</Text>
+            <Text style={[styles.metaValue, { marginBottom: 6 }]}>#{order.order_number}</Text>
             <Text style={styles.metaLabel}>Date</Text>
             <Text style={[styles.metaValueLight, { marginBottom: 6 }]}>{orderDate}</Text>
             <Text style={styles.metaLabel}>Status</Text>

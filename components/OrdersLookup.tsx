@@ -79,7 +79,7 @@ function OrderCard({ order, index }: { order: OrderWithItems; index: number }) {
               {/* Order ID + status */}
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-mono text-xs text-brand-muted bg-brand-bg px-2 py-0.5 rounded-md border border-brand-wood/15">
-                  #{order.id.slice(0, 8).toUpperCase()}
+                  #{order.order_number}
                 </span>
                 <span className={`flex items-center gap-1 font-hind text-xs font-semibold
                                   px-2.5 py-0.5 rounded-full border ${cfg.bg} ${cfg.color} ${cfg.border}`}>

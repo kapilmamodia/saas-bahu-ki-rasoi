@@ -33,7 +33,7 @@ async function getDashboardStats() {
     // All orders for the filterable table
     const { data: allOrders, error: allError } = await supabase
       .from("orders")
-      .select("id, customer_name, customer_email, total_cents, status, created_at, completed_at, invoice_url")
+      .select("id, order_number, customer_name, customer_email, total_cents, status, created_at, completed_at, invoice_url")
       .order("created_at", { ascending: false });
 
     if (allError) console.error("[Dashboard] All orders error:", allError);

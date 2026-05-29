@@ -36,6 +36,7 @@ export interface MenuItem {
 /** A customer order, linked to a Stripe session */
 export interface Order {
   id: string;
+  order_number: number;          // human-friendly sequential number: 1, 2, 3…
   stripe_session_id: string;
   customer_email: string;
   customer_name: string;

@@ -49,7 +49,7 @@ export default function OrderCompleted({ order, orderItems }: OrderCompletedProp
             </Heading>
             <Text style={{ color: "#4A3728", fontSize: "14px", margin: "0 0 20px" }}>
               Namaste <strong>{order.customer_name}</strong>! Your order{" "}
-              <strong>#{order.id.slice(0, 8).toUpperCase()}</strong> has been completed
+              <strong>#{order.order_number}</strong> has been completed
               and is ready for you. Enjoy your ghar ka khana! 🍛
             </Text>
 

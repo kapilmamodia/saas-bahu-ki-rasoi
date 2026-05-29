@@ -95,7 +95,7 @@ export default function OrderConfirmation({
                 <Column>
                   <Text style={{ color: "#8B6F5E", fontSize: "11px", margin: "0 0 2px", textTransform: "uppercase" }}>Order ID</Text>
                   <Text style={{ color: "#2C1A0E", fontSize: "13px", fontWeight: "bold", margin: 0 }}>
-                    {order.id.slice(0, 8).toUpperCase()}
+                    #{order.order_number}
                   </Text>
                 </Column>
                 <Column>

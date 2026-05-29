@@ -76,7 +76,7 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
       {/* Page heading */}
       <div className="flex items-start justify-between mb-2">
         <h1 className="font-yatra text-3xl text-brand-heading">
-          Order #{typedOrder.id.slice(0, 8).toUpperCase()}
+          Order #{typedOrder.order_number}
         </h1>
         <span className={`font-caveat text-base px-3 py-1 rounded-full ${statusColor(typedOrder.status)}`}>
           {typedOrder.status.toUpperCase()}

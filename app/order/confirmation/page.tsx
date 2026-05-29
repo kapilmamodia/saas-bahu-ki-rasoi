@@ -103,7 +103,7 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
         {/* Order ID */}
         <div className="flex justify-between font-hind text-sm text-brand-body mb-1">
           <span className="text-brand-muted">Order ID</span>
-          <span className="font-mono text-xs">{typedOrder.id.slice(0, 8).toUpperCase()}</span>
+          <span className="font-mono text-xs">#{typedOrder.order_number}</span>
         </div>
         {/* Customer */}
         <div className="flex justify-between font-hind text-sm text-brand-body mb-1">
