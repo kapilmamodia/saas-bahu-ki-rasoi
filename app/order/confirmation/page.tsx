@@ -14,6 +14,7 @@ import { Order, OrderItem } from "@/types";
 import MockPayButton from "./MockPayButton";
 import { CheckCircle, ShoppingBag, Download } from "lucide-react";
 import ConfettiBurst from "@/components/ConfettiBurst";
+import CopyOrderNumber from "./CopyOrderNumber";
 
 /** Force dynamic rendering — no caching so status updates appear immediately */
 export const dynamic = "force-dynamic";
@@ -106,7 +107,10 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
         {/* Order ID */}
         <div className="flex justify-between font-hind text-sm text-brand-body mb-1">
           <span className="text-brand-muted">Order ID</span>
-          <span className="font-mono text-xs">#{typedOrder.order_number}</span>
+          <span className="flex items-center gap-2">
+            <span className="font-mono text-xs">#{typedOrder.order_number}</span>
+            <CopyOrderNumber orderNumber={typedOrder.order_number} />
+          </span>
         </div>
         {/* Customer */}
         <div className="flex justify-between font-hind text-sm text-brand-body mb-1">

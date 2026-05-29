@@ -49,7 +49,7 @@ export default async function HomePage() {
       {/* ── Hero Section ─────────────────────────────────────────────────── */}
       <section className="bg-gradient-to-b from-brand-dark to-brand-wood text-brand-on-dark py-16 px-4 text-center">
         <p className="font-caveat text-brand-gold text-xl mb-2">🍛 Ghar ka khana, dil se banaya</p>
-        <h1 className="font-yatra text-4xl md:text-6xl text-white leading-tight mb-3">
+        <h1 className="font-yatra text-4xl md:text-6xl text-brand-gold leading-tight mb-3">
           Saas Bahu Ki Rasoi
         </h1>
         {/* Typewriter cycling moods — client island */}
@@ -116,7 +116,7 @@ export default async function HomePage() {
           style={{ backgroundImage: "radial-gradient(#D4A017 1px,transparent 1px)", backgroundSize: "28px 28px" }} />
         <div className="relative max-w-4xl mx-auto">
           <p className="font-caveat text-brand-gold text-xl mb-1">💛 Hamare Baare Mein</p>
-          <h2 className="font-yatra text-3xl md:text-4xl text-white mb-2"
+          <h2 className="font-yatra text-3xl md:text-4xl text-brand-gold mb-2"
             style={{ textShadow: "0 0 20px rgba(212,160,23,0.3)" }}>
             Ek Rasoi, Do Dil
           </h2>
@@ -135,7 +135,7 @@ export default async function HomePage() {
               <div key={label} className={`rounded-xl p-5 border ${cls}`}
                 style={{ background: "rgba(255,255,255,0.04)" }}>
                 <span className="text-3xl block mb-2">{icon}</span>
-                <p className="font-playfair text-white text-sm font-semibold mb-1">{label}</p>
+                <p className="font-playfair text-brand-gold text-sm font-semibold mb-1">{label}</p>
                 <p className="font-hind text-brand-on-dark/50 text-xs">{note}</p>
               </div>
             ))}

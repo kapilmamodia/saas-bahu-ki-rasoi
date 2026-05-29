@@ -1,21 +1,34 @@
 "use client";
-// Navbar — sticky top nav with animated cart bounce on item add.
+// Navbar — sticky top nav with cart bounce, floating cart preview, kitchen status pill.
 import Link from "next/link";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, X } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+
+/** Returns current IST hour */
+function getISTHour(): number {
+  const now = new Date();
+  const istMs = now.getTime() + now.getTimezoneOffset() * 60000 + 5.5 * 3600000;
+  return new Date(istMs).getHours();
+}
 
 /**
  * Top navigation bar.
- * Cart icon bounces (animate-cart-bounce) whenever a new item is added.
+ * Cart icon bounces on item add + shows a floating preview dropdown on hover (desktop).
  */
 export default function Navbar() {
-  const { itemCount, totalCents } = useCart();
-  const prevCountRef = useRef(itemCount);
-  const [bouncing, setBouncing] = useState(false);
+  const { itemCount, totalCents, items, removeItem } = useCart();
+  const prevCountRef  = useRef(itemCount);
+  const [bouncing, setBouncing]       = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [mounted, setMounted]         = useState(false);
+  const previewRef = useRef<HTMLDivElement>(null);
+  useEffect(() => setMounted(true), []);
 
-  const formatTotal = (paise: number) => `₹${(paise / 100).toLocaleString("en-IN")}`;
+  const fmt = (p: number) => `₹${(p / 100).toLocaleString("en-IN")}`;
 
+  // Bounce on item add
   useEffect(() => {
     if (itemCount > prevCountRef.current) {
       setBouncing(true);
@@ -25,17 +38,47 @@ export default function Navbar() {
     prevCountRef.current = itemCount;
   }, [itemCount]);
 
+  // Close preview when clicking outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (previewRef.current && !previewRef.current.contains(e.target as Node)) {
+        setPreviewOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
   return (
     <nav className="bg-brand-dark text-brand-on-dark sticky top-0 z-50 shadow-md">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Brand name / home link */}
+        {/* Brand name + kitchen status pill */}
         <Link href="/" className="flex items-center gap-3 group">
           <span className="font-yatra text-xl md:text-2xl text-brand-gold tracking-wide">
             Saas Bahu Ki Rasoi
           </span>
         </Link>
+        {/* Kitchen open/closed pill — only rendered after mount to avoid SSR mismatch */}
+        {mounted && (() => {
+          const h = getISTHour();
+          const isOpen = h >= 10 && h < 21;
+          const closingSoon = isOpen && h >= 20;
+          return (
+            <span className={`hidden sm:flex items-center gap-1.5 font-hind text-xs px-2.5 py-1
+                              rounded-full border font-medium
+                              ${isOpen
+                                ? closingSoon
+                                  ? "bg-amber-500/20 border-amber-400/40 text-amber-300"
+                                  : "bg-green-500/15 border-green-400/30 text-green-300"
+                                : "bg-red-500/15 border-red-400/30 text-red-300"
+                              }`}>
+              <span className={`w-1.5 h-1.5 rounded-full animate-pulse
+                ${isOpen ? closingSoon ? "bg-amber-400" : "bg-green-400" : "bg-red-400"}`} />
+              {isOpen ? closingSoon ? "Closing Soon" : "Open Now" : h < 10 ? "Closed · Opens 10 AM" : "Closed · Opens Tomorrow 10 AM"}
+            </span>
+          );
+        })()}
 
-        {/* Navigation links + cart */}
         <div className="flex items-center gap-6">
           <Link href="/menu" className="font-hind text-sm md:text-base hover:text-brand-gold transition-colors">
             Menu
@@ -47,26 +90,96 @@ export default function Navbar() {
             My Orders
           </Link>
 
+          {/* ── Cart icon + floating preview ── */}
+          <div ref={previewRef} className="relative"
+            onMouseEnter={() => itemCount > 0 && setPreviewOpen(true)}
+            onMouseLeave={() => setPreviewOpen(false)}>
 
-          {/* Cart icon — bounces on item add */}
-          <Link href="/cart" className="relative flex items-center gap-2 group" aria-label="View cart">
-            <div className={`relative ${bouncing ? "animate-cart-bounce" : ""}`}>
-              <ShoppingCart size={22} className="text-brand-gold group-hover:text-brand-rust transition-colors" />
+            <Link href="/cart" className="relative flex items-center gap-2 group" aria-label="View cart">
+              <div className={`relative ${bouncing ? "animate-cart-bounce" : ""}`}>
+                <ShoppingCart size={22} className="text-brand-gold group-hover:text-brand-rust transition-colors" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-brand-rust text-white text-xs
+                                   font-bold rounded-full w-5 h-5 flex items-center justify-center font-hind">
+                    {itemCount > 99 ? "99+" : itemCount}
+                  </span>
+                )}
+              </div>
               {itemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-brand-rust text-white text-xs
-                                 font-bold rounded-full w-5 h-5 flex items-center justify-center font-hind"
-                  aria-label={`${itemCount} items in cart`}>
-                  {itemCount > 99 ? "99+" : itemCount}
+                <span className="hidden sm:block font-hind text-sm font-semibold text-brand-gold
+                                 group-hover:text-brand-rust transition-colors">
+                  {fmt(totalCents)}
                 </span>
               )}
-            </div>
-            {itemCount > 0 && (
-              <span className="hidden sm:block font-hind text-sm font-semibold text-brand-gold
-                               group-hover:text-brand-rust transition-colors">
-                {formatTotal(totalCents)}
-              </span>
+            </Link>
+
+            {/* ── Floating cart preview dropdown — desktop only ── */}
+            {previewOpen && itemCount > 0 && (
+              <div className="absolute right-0 top-full mt-3 w-80 z-50
+                              bg-brand-card border border-brand-wood/20 rounded-2xl
+                              shadow-2xl overflow-hidden hidden md:block"
+                style={{ animation: "fadeSlideDown 0.18s ease-out" }}>
+
+                {/* Header */}
+                <div className="px-4 py-3 border-b border-brand-wood/10 flex items-center justify-between"
+                  style={{ background: "linear-gradient(135deg,rgba(123,74,30,0.07),rgba(212,160,23,0.04))" }}>
+                  <p className="font-playfair text-brand-heading text-sm font-semibold">
+                    🛒 Your Cart ({itemCount} item{itemCount !== 1 ? "s" : ""})
+                  </p>
+                  <button onClick={() => setPreviewOpen(false)} className="text-brand-muted hover:text-brand-rust transition-colors">
+                    <X size={14} />
+                  </button>
+                </div>
+
+                {/* Items list — max 4 visible, scrollable */}
+                <div className="max-h-56 overflow-y-auto cart-scroll px-3 py-2 flex flex-col gap-2">
+                  {items.map(({ menuItem, quantity }) => (
+                    <div key={menuItem.id} className="flex items-center gap-3 py-1.5 border-b border-brand-wood/8 last:border-0">
+                      {/* Thumbnail */}
+                      <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-brand-bg flex-shrink-0">
+                        {menuItem.photo_url
+                          ? <Image src={menuItem.photo_url} alt={menuItem.name} fill className="object-cover" sizes="40px" />
+                          : <span className="w-full h-full flex items-center justify-center text-lg">🍛</span>
+                        }
+                      </div>
+                      {/* Name + price */}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-hind text-xs text-brand-heading font-medium truncate">{menuItem.name}</p>
+                        <p className="font-hind text-xs text-brand-muted">
+                          {fmt(menuItem.price_cents)} × {quantity}
+                        </p>
+                      </div>
+                      {/* Line total */}
+                      <span className="font-hind text-xs font-semibold text-brand-gold flex-shrink-0">
+                        {fmt(menuItem.price_cents * quantity)}
+                      </span>
+                      {/* Remove */}
+                      <button onClick={() => removeItem(menuItem.id)}
+                        className="text-brand-muted/50 hover:text-brand-rust transition-colors flex-shrink-0"
+                        aria-label={`Remove ${menuItem.name}`}>
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Footer — total + go to cart */}
+                <div className="px-4 py-3 border-t border-brand-wood/10"
+                  style={{ background: "rgba(123,74,30,0.04)" }}>
+                  <div className="flex justify-between font-playfair text-sm font-bold text-brand-heading mb-2">
+                    <span>Total</span>
+                    <span className="text-brand-gold">{fmt(totalCents)}</span>
+                  </div>
+                  <Link href="/cart" onClick={() => setPreviewOpen(false)}
+                    className="block w-full text-center bg-brand-wood hover:bg-brand-rust
+                               text-white font-hind font-semibold text-sm py-2 rounded-xl
+                               transition-colors shadow-sm">
+                    Go to Cart →
+                  </Link>
+                </div>
+              </div>
             )}
-          </Link>
+          </div>
         </div>
       </div>
     </nav>

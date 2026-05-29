@@ -9,32 +9,20 @@
 .cart-scroll::-webkit-scrollbar-thumb  { background: #C0622A55; border-radius: 99px; }
 .cart-scroll::-webkit-scrollbar-thumb:hover { background: #C0622A99; }
 
-/* ── Brand CSS Custom Properties — Light mode (default) ──────────────────── */
+/* ── Brand CSS Custom Properties ─────────────────────────────────────────── */
 :root {
-  --color-bg-primary:  #F5EDD6;
-  --color-bg-card:     #FDF6E3;
-  --color-bg-dark:     #3B1F0C;
-  --color-brand-wood:  #7B4A1E;
-  --color-brand-rust:  #C0622A;
-  --color-brand-gold:  #D4A017;
-  --color-folk-sage:   #7A9E7E;
-  --color-folk-terra:  #E07B39;
+  --color-bg-primary:   #F5EDD6;
+  --color-bg-card:      #FDF6E3;
+  --color-bg-dark:      #3B1F0C;
+  --color-brand-wood:   #7B4A1E;
+  --color-brand-rust:   #C0622A;
+  --color-brand-gold:   #D4A017;
+  --color-folk-sage:    #7A9E7E;
+  --color-folk-terra:   #E07B39;
   --color-text-primary: #2C1A0E;
   --color-text-body:    #4A3728;
   --color-text-muted:   #8B6F5E;
   --color-text-on-dark: #F5EDD6;
-}
-
-/* ── Dark mode overrides — applied when <html class="dark"> ──────────────── */
-.dark {
-  --color-bg-primary:  #1A0E07;   /* deep charcoal-brown */
-  --color-bg-card:     #241408;   /* dark card surface */
-  --color-bg-dark:     #0F0804;   /* near-black nav/footer */
-  --color-text-primary: #F5EDD6;  /* parchment for headings */
-  --color-text-body:    #D4B896;  /* warm tan body text */
-  --color-text-muted:   #8B7060;  /* muted stays similar */
-  --color-text-on-dark: #F5EDD6;
-  /* Gold + rust stay the same — they pop beautifully on dark */
 }
 
 /* ── Base Resets ─────────────────────────────────────────────────────────── */
@@ -62,92 +50,42 @@ body {
   opacity: 0.6;
 }
 
-/* ── Parchment shimmer skeleton (loading states) ─────────────────────────── */
+/* ── Parchment shimmer skeleton ───────────────────────────────────────────
+   Diagonal light sweep — warmer and more alive than a flat grey pulse.
+   Use .skeleton-parchment on any block element to get the shimmer.
+   Use .skeleton-delay-N (1-6) on individual blocks for staggered wave.    */
 @keyframes shimmer-parchment {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
+  0%   { background-position: -800px 0; }
+  100% { background-position: 800px 0; }
 }
 
 .skeleton-parchment {
   background: linear-gradient(
-    90deg,
-    #F5EDD6 25%,
-    #EFE3C2 50%,
-    #F5EDD6 75%
+    105deg,
+    #EDE0C4 0%,
+    #EDE0C4 35%,
+    #FAF2E0 47%,
+    #FFFBF0 50%,
+    #FAF2E0 53%,
+    #EDE0C4 65%,
+    #EDE0C4 100%
   );
-  background-size: 800px 100%;
-  animation: shimmer-parchment 1.4s ease-in-out infinite;
+  background-size: 1600px 100%;
+  animation: shimmer-parchment 1.8s ease-in-out infinite;
   border-radius: 0.375rem;
 }
 
+/* Staggered delays — apply to individual skeleton blocks for wave effect */
+.skeleton-delay-1 { animation-delay: 0.10s; }
+.skeleton-delay-2 { animation-delay: 0.20s; }
+.skeleton-delay-3 { animation-delay: 0.30s; }
+.skeleton-delay-4 { animation-delay: 0.40s; }
+.skeleton-delay-5 { animation-delay: 0.50s; }
+.skeleton-delay-6 { animation-delay: 0.60s; }
 
-/* ── Cart scrollable item list — thin warm scrollbar ─────────────────────── */
-.cart-scroll::-webkit-scrollbar        { width: 4px; }
-.cart-scroll::-webkit-scrollbar-track  { background: transparent; }
-.cart-scroll::-webkit-scrollbar-thumb  { background: #C0622A55; border-radius: 99px; }
-.cart-scroll::-webkit-scrollbar-thumb:hover { background: #C0622A99; }
-
-/* ── Brand CSS Custom Properties ─────────────────────────────────────────── */
-:root {
-  /* Backgrounds */
-  --color-bg-primary:  #F5EDD6;
-  --color-bg-card:     #FDF6E3;
-  --color-bg-dark:     #3B1F0C;
-
-  /* Brand */
-  --color-brand-wood:  #7B4A1E;
-  --color-brand-rust:  #C0622A;
-  --color-brand-gold:  #D4A017;
-
-  /* Folk Art Accents */
-  --color-folk-sage:   #7A9E7E;
-  --color-folk-terra:  #E07B39;
-
-  /* Text */
-  --color-text-primary: #2C1A0E;
-  --color-text-body:    #4A3728;
-  --color-text-muted:   #8B6F5E;
-  --color-text-on-dark: #F5EDD6;
+/* ── Cart preview dropdown fade-in ───────────────────────────────────────── */
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Base Resets ─────────────────────────────────────────────────────────── */
-body {
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-body);
-}
-
-/* ── Utility: Spice-line divider (dot-dash in gold) ─────────────────────── */
-.divider-spice {
-  border: none;
-  height: 2px;
-  background: repeating-linear-gradient(
-    to right,
-    var(--color-brand-gold) 0px,
-    var(--color-brand-gold) 6px,
-    transparent 6px,
-    transparent 10px,
-    var(--color-brand-gold) 10px,
-    var(--color-brand-gold) 12px,
-    transparent 12px,
-    transparent 18px
-  );
-  opacity: 0.6;
-}
-
-/* ── Parchment shimmer skeleton (loading states) ─────────────────────────── */
-@keyframes shimmer-parchment {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
-
-.skeleton-parchment {
-  background: linear-gradient(
-    90deg,
-    #F5EDD6 25%,
-    #EFE3C2 50%,
-    #F5EDD6 75%
-  );
-  background-size: 800px 100%;
-  animation: shimmer-parchment 1.4s ease-in-out infinite;
-  border-radius: 0.375rem;
-}

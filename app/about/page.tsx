@@ -28,7 +28,7 @@ export default function AboutPage() {
 
         <div className="relative z-10">
           <p className="font-caveat text-brand-gold text-xl mb-1">💛 Hamare Baare Mein</p>
-          <h1 className="font-yatra text-4xl md:text-5xl text-white mb-2"
+          <h1 className="font-yatra text-4xl md:text-5xl text-brand-gold mb-2"
             style={{ textShadow: "0 0 20px rgba(212,160,23,0.4)" }}>
             Ek Rasoi, Do Dil
           </h1>

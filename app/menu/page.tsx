@@ -59,7 +59,7 @@ export default async function MenuPage() {
       {/* Page header */}
       <div className="bg-brand-dark text-brand-on-dark py-10 px-4 text-center">
         <p className="font-caveat text-brand-gold text-lg mb-1">🍽️ Hamare pakwan</p>
-        <h1 className="font-yatra text-4xl md:text-5xl text-white">Our Menu</h1>
+        <h1 className="font-yatra text-4xl md:text-5xl text-brand-gold">Our Menu</h1>
         <p className="font-hind text-brand-on-dark/70 mt-2 text-sm md:text-base">
           Everything made fresh, from our rasoi to your table
         </p>
