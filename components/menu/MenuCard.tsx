@@ -50,7 +50,7 @@ export default function MenuCard({ item }: MenuCardProps) {
   };
 
   return (
-    <div className={`relative bg-brand-card border border-brand-wood/30 rounded-xl
+    <div className={`group relative bg-brand-card border border-brand-wood/30 rounded-xl
                     shadow-sm overflow-hidden flex flex-col
                     transition-shadow hover:shadow-md
                     ${!item.is_available ? "opacity-60" : ""}`}>
@@ -65,11 +65,12 @@ export default function MenuCard({ item }: MenuCardProps) {
         </div>
       )}
 
-      {/* Photo section */}
-      <div className="relative w-full h-44 bg-brand-bg">
+      {/* Photo section — overflow-hidden so zoom stays clipped inside card */}
+      <div className="relative w-full h-44 bg-brand-bg overflow-hidden">
         {item.photo_url ? (
           <Image src={item.photo_url} alt={`Photo of ${item.name}`} fill
-            className="object-cover" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+            className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <span className="text-5xl" role="img" aria-label="Food">🍛</span>

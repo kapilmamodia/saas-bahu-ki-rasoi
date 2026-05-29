@@ -6,6 +6,7 @@ import type { MenuItem } from "@/types";
 import { getHomePageCoupons } from "@/lib/actions/couponActions";
 import CouponPopup from "@/components/coupon/CouponPopup";
 import TypewriterMood from "@/components/TypewriterMood";
+import HeroParticles from "@/components/HeroParticles";
 
 /**
  * Force dynamic rendering — never pre-render at build time with empty data.
@@ -46,20 +47,25 @@ export default async function HomePage() {
     <div className="min-h-screen">
 
       {/* ── Hero Section ─────────────────────────────────────────────────── */}
-      <section className="bg-gradient-to-b from-brand-dark to-brand-wood text-brand-on-dark py-16 px-4 text-center">
-        <p className="font-caveat text-brand-gold text-xl mb-2">🍛 Ghar ka khana, dil se banaya</p>
-        <h1 className="font-yatra text-4xl md:text-6xl text-brand-gold leading-tight mb-3">
-          Saas Bahu Ki Rasoi
-        </h1>
-        {/* Typewriter cycling moods — client island */}
-        <TypewriterMood />
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link href="/menu" className="bg-brand-gold hover:bg-brand-rust text-brand-dark font-hind font-semibold px-8 py-3 rounded-full shadow-md transition-colors text-base">
-            Browse Menu
-          </Link>
-          <a href="tel:+91XXXXXXXXXX" className="border-2 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-hind font-semibold px-8 py-3 rounded-full transition-colors text-base">
-            📞 Call to Order
-          </a>
+      <section className="relative bg-gradient-to-b from-brand-dark to-brand-wood text-brand-on-dark py-16 px-4 text-center overflow-hidden">
+        {/* Floating spice particles — pure CSS parallax */}
+        <HeroParticles />
+        {/* Content sits above particles */}
+        <div className="relative z-10">
+          <p className="font-caveat text-brand-gold text-xl mb-2">🍛 Ghar ka khana, dil se banaya</p>
+          <h1 className="font-yatra text-4xl md:text-6xl text-brand-gold leading-tight mb-3">
+            Saas Bahu Ki Rasoi
+          </h1>
+          {/* Typewriter cycling moods — client island */}
+          <TypewriterMood />
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/menu" className="bg-brand-gold hover:bg-brand-rust text-brand-dark font-hind font-semibold px-8 py-3 rounded-full shadow-md transition-colors text-base">
+              Browse Menu
+            </Link>
+            <a href="tel:+919829075457" className="border-2 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-hind font-semibold px-8 py-3 rounded-full transition-colors text-base">
+              📞 Call to Order
+            </a>
+          </div>
         </div>
       </section>
 
@@ -87,7 +93,18 @@ export default async function HomePage() {
         </div>
         {specials.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-5xl mb-4">🍲</p>
+            {/* Lottie-style animated cooking scene */}
+            <div className="flex items-end justify-center gap-1 mb-4 h-16">
+              {/* Flame */}
+              <span className="text-2xl animate-flame" style={{ animationDelay: "0s" }}>🔥</span>
+              {/* Pot with steam */}
+              <div className="flex flex-col items-center">
+                <span className="text-sm animate-pot-steam mb-0.5" style={{ opacity: 0.7 }}>〰️</span>
+                <span className="text-4xl animate-bounce-gentle">🍲</span>
+              </div>
+              {/* Spoon stirring */}
+              <span className="text-2xl animate-spoon-stir origin-bottom" style={{ animationDelay: "0.3s" }}>🥄</span>
+            </div>
             <p className="font-playfair text-xl text-brand-heading mb-2">Check back soon for today&apos;s specials!</p>
             <p className="font-hind text-brand-muted">Our kitchen is busy cooking something wonderful for you.</p>
             <Link href="/menu" className="mt-6 inline-block bg-brand-wood hover:bg-brand-rust text-white font-hind font-medium px-6 py-2 rounded-full transition-colors">
