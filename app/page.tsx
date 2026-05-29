@@ -62,7 +62,7 @@ export default async function HomePage() {
             <Link href="/menu" className="bg-brand-gold hover:bg-brand-rust text-brand-dark font-hind font-semibold px-8 py-3 rounded-full shadow-md transition-colors text-base">
               Browse Menu
             </Link>
-            <a href="tel:+919829075457" className="border-2 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-hind font-semibold px-8 py-3 rounded-full transition-colors text-base">
+            <a href="tel:+91XXXXXXXXXX" className="border-2 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-brand-dark font-hind font-semibold px-8 py-3 rounded-full transition-colors text-base">
               📞 Call to Order
             </a>
           </div>
@@ -76,7 +76,7 @@ export default async function HomePage() {
         <p className="font-caveat text-lg text-brand-wood">
           🎉 Planning a Kitty Party or Get Together? We&apos;ve got you covered.{" "}
           <a href="tel:+91XXXXXXXXXX" className="underline hover:text-brand-rust transition-colors">
-            Call Veena / Rajeshwari: +91 XXX-XX-XXXX
+            Call Veena / Rajeshwari: +91 XXX-XXX-XXXX
           </a>
         </p>
       </section>

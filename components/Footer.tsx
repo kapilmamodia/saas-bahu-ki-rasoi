@@ -142,17 +142,17 @@ export default function Footer() {
             {/* Veena */}
             <div>
               <p className="font-caveat text-brand-on-dark/60 text-sm">Veena Khandelwal</p>
-              <a href="tel:+919829075457"
+              <a href="tel:+91XXXXXXXXXX"
                 className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors">
-                📞 +91 98290 75457
+                📞 +91 XXX-XXX-XXXX
               </a>
             </div>
             {/* Rajeshwari */}
             <div>
               <p className="font-caveat text-brand-on-dark/60 text-sm">Rajeshwari Khandelwal</p>
-              <a href="tel:+919982128866"
+              <a href="tel:+91XXXXXXXXXX"
                 className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors">
-                📞 +91 99821 28866
+                📞 +91 XXX-XXX-XXXX
               </a>
             </div>
 

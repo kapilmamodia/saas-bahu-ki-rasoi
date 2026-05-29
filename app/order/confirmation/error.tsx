@@ -19,13 +19,13 @@ export default function ConfirmationError() {
         <p>
           Rajeshwari{" "}
           <a href="tel:+91XXXXXXXXXX" className="text-brand-wood hover:text-brand-rust underline">
-            +91 XXX-XX-XXXX
+            +91 XXX-XXX-XXXX
           </a>
         </p>
         <p>
           Veena{" "}
           <a href="tel:+91XXXXXXXXXX" className="text-brand-wood hover:text-brand-rust underline">
-            +91 XXX-XX-XXXX
+            +91 XXX-XXX-XXXX
           </a>
         </p>
       </div>
