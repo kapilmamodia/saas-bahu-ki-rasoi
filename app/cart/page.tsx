@@ -418,7 +418,7 @@ export default function CartPage() {
 
               {/* ── Kitchen closed banner + blocked CTA ── */}
               {(() => {
-                const { isOpen, closingSoon, nextOpenText, scheduleText, overrideNote } = kitchenStatus;
+                const { isOpen, closingSoon, nextOpenText, overrideNote } = kitchenStatus;
                 if (!isOpen) {
                   return (
                     <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-center space-y-1">
