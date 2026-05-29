@@ -125,22 +125,6 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* 4 value tiles */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-10">
-            {[
-              { icon:"🌶️", label:"Fresh Every Day",   note:"No frozen, no shortcuts",        cls:"border-brand-rust/20"  },
-              { icon:"🫙",  label:"Ancestral Recipes", note:"Passed down from generations",   cls:"border-brand-gold/20"  },
-              { icon:"🪔",  label:"Made with Love",    note:"You can taste the difference",   cls:"border-brand-gold/20"  },
-              { icon:"🏠",  label:"Ghar ka Khana",     note:"Just like Ma banati thi",        cls:"border-brand-rust/20"  },
-            ].map(({ icon, label, note, cls }) => (
-              <div key={label} className={`rounded-xl p-5 border ${cls}`}
-                style={{ background: "rgba(255,255,255,0.04)" }}>
-                <span className="text-3xl block mb-2">{icon}</span>
-                <p className="font-playfair text-white text-sm font-semibold mb-1">{label}</p>
-                <p className="font-hind text-brand-on-dark/50 text-xs">{note}</p>
-              </div>
-            ))}
-          </div>
 
           {/* CTA */}
           <div className="text-center">

@@ -114,19 +114,33 @@ export default async function HomePage() {
         style={{ background: "linear-gradient(180deg,#1A0A02 0%,#3B1F0C 100%)" }}>
         <div className="absolute inset-0 opacity-5"
           style={{ backgroundImage: "radial-gradient(#D4A017 1px,transparent 1px)", backgroundSize: "28px 28px" }} />
-        <div className="relative max-w-xl mx-auto">
+        <div className="relative max-w-4xl mx-auto">
           <p className="font-caveat text-brand-gold text-xl mb-1">💛 Hamare Baare Mein</p>
           <h2 className="font-yatra text-3xl md:text-4xl text-white mb-2"
             style={{ textShadow: "0 0 20px rgba(212,160,23,0.3)" }}>
             Ek Rasoi, Do Dil
           </h2>
-          <p className="font-playfair text-brand-gold/70 italic text-base mb-4">
+          <p className="font-playfair text-brand-gold/70 italic text-base mb-6">
             One Kitchen, Two Hearts
           </p>
-          <p className="font-hind text-brand-on-dark/70 text-sm leading-relaxed mb-6">
-            Meet Veena &amp; Rajeshwari Khandelwal — the Saas and Bahu who cook every meal
-            with four decades of tradition, love, and the soul of Rajasthan & Uttar Pradesh.
-          </p>
+
+          {/* 4 value tiles */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-8">
+            {[
+              { icon:"🌶️", label:"Fresh Every Day",    note:"No frozen, no shortcuts",       cls:"border-brand-rust/20"  },
+              { icon:"🫙",  label:"Ancestral Recipes",  note:"Passed down from generations",  cls:"border-brand-gold/20"  },
+              { icon:"🪔",  label:"Made with Love",     note:"You can taste the difference",  cls:"border-brand-gold/20"  },
+              { icon:"🏠",  label:"Ghar ka Khana",      note:"Just like Ma banati thi",       cls:"border-brand-rust/20"  },
+            ].map(({ icon, label, note, cls }) => (
+              <div key={label} className={`rounded-xl p-5 border ${cls}`}
+                style={{ background: "rgba(255,255,255,0.04)" }}>
+                <span className="text-3xl block mb-2">{icon}</span>
+                <p className="font-playfair text-white text-sm font-semibold mb-1">{label}</p>
+                <p className="font-hind text-brand-on-dark/50 text-xs">{note}</p>
+              </div>
+            ))}
+          </div>
+
           <Link href="/about"
             className="inline-flex items-center gap-2 bg-brand-gold hover:bg-brand-rust
                        text-brand-dark font-hind font-semibold px-7 py-2.5 rounded-full
