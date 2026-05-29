@@ -58,7 +58,7 @@ function ReviewCard({ review, index }: { review: Review; index: number }) {
     >
       {/* Quote mark decoration */}
       <span className="absolute top-3 right-4 font-playfair text-5xl text-brand-gold/10 leading-none select-none">
-        "
+        &ldquo;
       </span>
 
       {/* Stars */}

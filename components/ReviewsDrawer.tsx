@@ -66,7 +66,7 @@ function ReviewCard({ review }: { review: Review }) {
       {/* Quote + stars */}
       <div className="flex items-start justify-between gap-2">
         <StarRow rating={review.rating} size={13} />
-        <span className="font-playfair text-3xl text-brand-gold/15 leading-none select-none">"</span>
+        <span className="font-playfair text-3xl text-brand-gold/15 leading-none select-none">&ldquo;</span>
       </div>
       {/* Message */}
       <p className="font-hind text-sm text-brand-body leading-relaxed line-clamp-3">{review.message}</p>
