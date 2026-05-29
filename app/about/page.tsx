@@ -88,7 +88,6 @@ export default function AboutPage() {
                   <p className="font-caveat text-brand-gold text-lg italic leading-snug">
                     &ldquo;Khana sirf pet nahi, dil bhi bharta hai.&rdquo;
                   </p>
-                  <p className="font-hind text-brand-on-dark/40 text-xs mt-0.5">— Veena ji</p>
                 </div>
               </div>
             </div>
@@ -121,7 +120,6 @@ export default function AboutPage() {
                   <p className="font-caveat text-brand-rust text-lg italic leading-snug">
                     &ldquo;Saas ne sikhaya, maine apnaya — dono ki rasoi, ek hi dil.&rdquo;
                   </p>
-                  <p className="font-hind text-brand-on-dark/40 text-xs mt-0.5">— Rajeshwari ji</p>
                 </div>
               </div>
             </div>

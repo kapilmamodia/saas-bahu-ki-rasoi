@@ -68,7 +68,7 @@ export default function Footer() {
           <div className="flex flex-col gap-3">
             {/* Veena */}
             <div>
-              <p className="font-caveat text-brand-on-dark/60 text-sm">Veena Khandelwal — Saas</p>
+              <p className="font-caveat text-brand-on-dark/60 text-sm">Veena Khandelwal</p>
               <a
                 href="tel:+91XXXXXXXXXX"
                 className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors"
@@ -78,7 +78,7 @@ export default function Footer() {
             </div>
             {/* Rajeshwari */}
             <div>
-              <p className="font-caveat text-brand-on-dark/60 text-sm">Rajeshwari Khandelwal — Bahu</p>
+              <p className="font-caveat text-brand-on-dark/60 text-sm">Rajeshwari Khandelwal</p>
               <a
                 href="tel:+91XXXXXXXXXX"
                 className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors"
