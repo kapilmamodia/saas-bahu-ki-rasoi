@@ -1,15 +1,17 @@
 "use client";
 /**
  * OrdersLookup — interactive order history for /orders page.
- * Features: animated search, timeline-style cards, status glow, item chips,
- * smooth expand/collapse, summary stats bar.
+ * Features: search by email OR phone, animated search, timeline-style cards,
+ * status glow, item chips, smooth expand/collapse, summary stats bar.
  */
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, Download, ChevronDown, Tag, Package, CheckCircle2, XCircle, Clock, Filter } from "lucide-react";
-import { getOrdersByEmail, type OrderWithItems } from "@/lib/actions/customerActions";
+import { Search, Download, ChevronDown, Tag, Package, CheckCircle2, XCircle, Clock, Filter, Mail, Phone } from "lucide-react";
+import { getOrdersByEmail, getOrdersByPhone, type OrderWithItems } from "@/lib/actions/customerActions";
 import type { OrderItem } from "@/types";
 import OrderAgainButton from "@/components/OrderAgainButton";
+
+type SearchMode = "email" | "phone";
 
 /** Format paise → ₹ */
 function fmt(p: number): string {
@@ -224,15 +226,28 @@ function StatBar({ orders }: { orders: OrderWithItems[] }) {
 
 /** Main component */
 export default function OrdersLookup() {
-  const [email, setEmail]       = useState("");
+  const [mode, setMode]         = useState<SearchMode>("email");
+  const [query, setQuery]       = useState("");
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState<string | null>(null);
   const [orders, setOrders]     = useState<OrderWithItems[] | null>(null);
   const [searched, setSearched] = useState(false);
+  const [searchedQuery, setSearchedQuery] = useState(""); // what was searched, for display
 
   // ── Date filter state ──
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate]     = useState("");
+
+  /** Switch mode and clear results */
+  const handleModeSwitch = (m: SearchMode) => {
+    setMode(m);
+    setQuery("");
+    setError(null);
+    setOrders(null);
+    setSearched(false);
+    setFromDate("");
+    setToDate("");
+  };
 
   /** Orders filtered by the date range (client-side, instant) */
   const filteredOrders = useMemo(() => {
@@ -252,15 +267,22 @@ export default function OrdersLookup() {
 
   const handleSearch = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!email.trim()) return;
+    if (!query.trim()) return;
     try {
       setLoading(true);
       setError(null);
       setOrders(null);
       setSearched(false);
-      const result = await getOrdersByEmail(email.trim());
+      // Call the correct action depending on mode
+      const result = mode === "email"
+        ? await getOrdersByEmail(query.trim())
+        : await getOrdersByPhone(query.trim());
       if (result.error) { setError(result.error); }
-      else { setOrders(result.orders ?? []); setSearched(true); }
+      else {
+        setOrders(result.orders ?? []);
+        setSearchedQuery(query.trim());
+        setSearched(true);
+      }
     } catch (err) {
       console.error("[OrdersLookup]", err);
       setError("Something went wrong. Please try again.");
@@ -274,21 +296,42 @@ export default function OrdersLookup() {
       {/* ── Search form ── */}
       <form onSubmit={handleSearch}
         className="bg-brand-card border border-brand-wood/25 rounded-2xl p-5 shadow-sm mb-8">
+
+        {/* ── Email / Phone toggle ── */}
+        <div className="flex gap-2 mb-4 bg-brand-bg border border-brand-wood/15 rounded-xl p-1">
+          <button type="button"
+            onClick={() => handleModeSwitch("email")}
+            className={`flex-1 flex items-center justify-center gap-2 font-hind text-sm py-2 rounded-lg transition-colors
+              ${mode === "email" ? "bg-brand-wood text-white shadow-sm" : "text-brand-muted hover:text-brand-body"}`}>
+            <Mail size={14} /> Email
+          </button>
+          <button type="button"
+            onClick={() => handleModeSwitch("phone")}
+            className={`flex-1 flex items-center justify-center gap-2 font-hind text-sm py-2 rounded-lg transition-colors
+              ${mode === "phone" ? "bg-brand-wood text-white shadow-sm" : "text-brand-muted hover:text-brand-body"}`}>
+            <Phone size={14} /> Phone
+          </button>
+        </div>
+
         <p className="font-caveat text-brand-muted text-base mb-3">
-          🔍 Enter your email to find all your past orders
+          {mode === "email"
+            ? "🔍 Enter your email to find all your past orders"
+            : "🔍 Enter your phone number to find all your past orders"}
         </p>
+
         <div className="flex gap-2">
           <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="e.g. priya@example.com"
+            key={mode} // remount input when mode switches to clear autofill
+            type={mode === "email" ? "email" : "tel"}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder={mode === "email" ? "e.g. priya@example.com" : "e.g. 98765 43210"}
             required
             className="flex-1 border border-brand-wood/30 rounded-xl px-4 py-3
                        font-hind text-brand-body bg-brand-bg placeholder:text-brand-muted/60
                        focus:outline-none focus:ring-2 focus:ring-brand-wood/40"
           />
-          <button type="submit" disabled={loading || !email.trim()}
+          <button type="submit" disabled={loading || !query.trim()}
             className="flex items-center gap-2 bg-brand-wood hover:bg-brand-rust text-white
                        font-hind font-semibold px-6 py-3 rounded-xl transition-colors
                        disabled:opacity-50 disabled:cursor-not-allowed shrink-0">
@@ -314,8 +357,8 @@ export default function OrdersLookup() {
             <p className="text-5xl mb-4">🍲</p>
             <p className="font-playfair text-xl text-brand-heading mb-2">No orders found</p>
             <p className="font-hind text-brand-muted text-sm mb-6">
-              No orders found for <strong>{email}</strong>.<br />
-              Try the email you used at checkout.
+              No orders found for <strong>{searchedQuery}</strong>.<br />
+              Try the {mode === "email" ? "email" : "phone number"} you used at checkout.
             </p>
             <Link href="/menu"
               className="bg-brand-wood hover:bg-brand-rust text-white font-hind px-6 py-2.5 rounded-full transition-colors">

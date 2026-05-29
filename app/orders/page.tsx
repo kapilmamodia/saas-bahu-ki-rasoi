@@ -13,7 +13,7 @@ export default function OrdersPage() {
         My Orders
       </h1>
       <p className="font-hind text-brand-muted mb-2">
-        Enter the email address you used when placing your order.
+        Enter the email address or phone number you used when placing your order.
       </p>
       <hr className="divider-spice mb-8" />
 
