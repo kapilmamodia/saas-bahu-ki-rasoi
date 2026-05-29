@@ -5,13 +5,7 @@ import { ShoppingCart, X } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-
-/** Returns current IST hour */
-function getISTHour(): number {
-  const now = new Date();
-  const istMs = now.getTime() + now.getTimezoneOffset() * 60000 + 5.5 * 3600000;
-  return new Date(istMs).getHours();
-}
+import { useKitchenStatus } from "@/hooks/useKitchenStatus";
 
 /**
  * Top navigation bar.
@@ -19,6 +13,7 @@ function getISTHour(): number {
  */
 export default function Navbar() {
   const { itemCount, totalCents, items, removeItem } = useCart();
+  const kitchenStatus = useKitchenStatus();
   const prevCountRef  = useRef(itemCount);
   const [bouncing, setBouncing]       = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -58,26 +53,24 @@ export default function Navbar() {
             Saas Bahu Ki Rasoi
           </span>
         </Link>
-        {/* Kitchen open/closed pill — only rendered after mount to avoid SSR mismatch */}
-        {mounted && (() => {
-          const h = getISTHour();
-          const isOpen = h >= 10 && h < 21;
-          const closingSoon = isOpen && h >= 20;
-          return (
-            <span className={`hidden sm:flex items-center gap-1.5 font-hind text-xs px-2.5 py-1
-                              rounded-full border font-medium
-                              ${isOpen
-                                ? closingSoon
-                                  ? "bg-amber-500/20 border-amber-400/40 text-amber-300"
-                                  : "bg-green-500/15 border-green-400/30 text-green-300"
-                                : "bg-red-500/15 border-red-400/30 text-red-300"
-                              }`}>
-              <span className={`w-1.5 h-1.5 rounded-full animate-pulse
-                ${isOpen ? closingSoon ? "bg-amber-400" : "bg-green-400" : "bg-red-400"}`} />
-              {isOpen ? closingSoon ? "Closing Soon" : "Open Now" : h < 10 ? "Closed · Opens 10 AM" : "Closed · Opens Tomorrow 10 AM"}
-            </span>
-          );
-        })()}
+        {/* Kitchen open/closed pill — fetches DB overrides via useKitchenStatus */}
+        {mounted && (
+          <span className={`hidden sm:flex items-center gap-1.5 font-hind text-xs px-2.5 py-1
+                            rounded-full border font-medium
+                            ${kitchenStatus.isOpen
+                              ? kitchenStatus.closingSoon
+                                ? "bg-amber-500/20 border-amber-400/40 text-amber-300"
+                                : "bg-green-500/15 border-green-400/30 text-green-300"
+                              : "bg-red-500/15 border-red-400/30 text-red-300"
+                            }`}>
+            <span className={`w-1.5 h-1.5 rounded-full animate-pulse
+              ${kitchenStatus.isOpen ? kitchenStatus.closingSoon ? "bg-amber-400" : "bg-green-400" : "bg-red-400"}`} />
+            {kitchenStatus.isOpen
+              ? kitchenStatus.closingSoon ? "Closing Soon" : "Open Now"
+              : `Closed · ${kitchenStatus.nextOpenText}`
+            }
+          </span>
+        )}
 
         <div className="flex items-center gap-6">
           <Link href="/menu" className="font-hind text-sm md:text-base hover:text-brand-gold transition-colors">

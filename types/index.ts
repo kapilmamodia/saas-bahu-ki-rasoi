@@ -2,6 +2,18 @@
 // All data model types live here — import from "@/types" throughout the app.
 // Prices are ALWAYS stored in cents (integers) — never floats for money.
 
+// ─── Kitchen Schedule Override ───────────────────────────────────────────────
+/** A per-date kitchen schedule override (holiday, early close, late open, day off) */
+export interface KitchenScheduleOverride {
+  id: string;
+  date: string;           // YYYY-MM-DD
+  is_closed: boolean;     // true = full day closed
+  open_hour: number | null;   // null = use default
+  close_hour: number | null;  // null = use default
+  note: string | null;        // admin note e.g. "Diwali Holiday"
+  created_at: string;
+}
+
 // ─── Category ────────────────────────────────────────────────────────────────
 /** A menu category (e.g. Starters, Mains, Desserts) */
 export interface Category {

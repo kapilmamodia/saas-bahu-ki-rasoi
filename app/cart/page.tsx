@@ -1,5 +1,5 @@
 "use client";
-// Cart page — redesigned with two-column layout: items list (left) + sticky summary panel (right).
+// Cart page — two-column layout: items list (left) + sticky summary panel (right).
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,6 +8,7 @@ import { Minus, Plus, Trash2, ShoppingBag, Tag, X, MapPin, PackageCheck, Chevron
 import { useCart } from "@/hooks/useCart";
 import { validateCoupon } from "@/lib/actions/couponActions";
 import type { CouponValidationResult } from "@/types";
+import { useKitchenStatus } from "@/hooks/useKitchenStatus";
 
 const TAX_RATE = 0.18;
 
@@ -23,6 +24,7 @@ function formatPrice(paise: number): string {
 export default function CartPage() {
   const { items, updateQuantity, removeItem, totalCents, clearCart } = useCart();
   const router = useRouter();
+  const kitchenStatus = useKitchenStatus();
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -414,21 +416,45 @@ export default function CartPage() {
                 </p>
               )}
 
-              {/* CTA button */}
-              <button onClick={handleCheckout} disabled={checkoutLoading}
-                className="w-full flex items-center justify-center gap-2
-                           bg-brand-wood hover:bg-brand-rust text-white
-                           font-hind font-semibold py-3.5 rounded-xl shadow-md
-                           transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base">
-                {checkoutLoading
-                  ? <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
-                  : <ShoppingBag size={18} />}
-                {checkoutLoading ? "Processing..." : "Place Order"}
-              </button>
-
-              <p className="text-center font-caveat text-brand-muted text-sm">
-                🧪 Mock payment mode — no real charges
-              </p>
+              {/* ── Kitchen closed banner + blocked CTA ── */}
+              {(() => {
+                const { isOpen, closingSoon, nextOpenText, scheduleText, overrideNote } = kitchenStatus;
+                if (!isOpen) {
+                  return (
+                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-center space-y-1">
+                      <p className="font-playfair text-red-700 font-semibold text-base">🔴 Kitchen is Closed</p>
+                      {/* Show override note if present, then always show next open time */}
+                      {overrideNote && (
+                        <p className="font-hind text-red-600 text-sm">{overrideNote}</p>
+                      )}
+                      <p className="font-hind text-red-600 text-sm">{nextOpenText}</p>
+                    </div>
+                  );
+                }
+                return (
+                  <>
+                    {closingSoon && (
+                      <p className="font-hind text-xs text-amber-600 bg-amber-50 border border-amber-200
+                                     rounded-lg px-3 py-2 text-center">
+                        ⏰ Kitchen closes soon — place your order quickly!
+                      </p>
+                    )}
+                    <button onClick={handleCheckout} disabled={checkoutLoading}
+                      className="w-full flex items-center justify-center gap-2
+                                 bg-brand-wood hover:bg-brand-rust text-white
+                                 font-hind font-semibold py-3.5 rounded-xl shadow-md
+                                 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base">
+                      {checkoutLoading
+                        ? <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+                        : <ShoppingBag size={18} />}
+                      {checkoutLoading ? "Processing..." : "Place Order"}
+                    </button>
+                    <p className="text-center font-caveat text-brand-muted text-sm">
+                      🧪 Mock payment mode — no real charges
+                    </p>
+                  </>
+                );
+              })()}
             </div>
           </div>
         </div>

@@ -1,5 +1,4 @@
 // Admin dashboard — summary stats and filterable orders table.
-// Server Component: fetches data using the service role client.
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import OrdersTable, { OrderRow } from "@/components/admin/OrdersTable";
@@ -94,8 +93,7 @@ export default async function AdminDashboardPage() {
 
       {/* ── Summary cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-        <StatCard emoji="🔔" label="New (Last Hour)" value={String(newOrders)}
-          highlight={newOrders > 0} />
+        <StatCard emoji="🔔" label="New (Last Hour)" value={String(newOrders)} highlight={newOrders > 0} />
         <StatCard emoji="📦" label="Orders Today" value={String(ordersToday)} />
         <StatCard emoji="💰" label="Revenue Today" value={formatPrice(revenueToday)} />
       </div>
@@ -133,4 +131,5 @@ function StatCard({
   if (href) return <Link href={href}>{content}</Link>;
   return content;
 }
+
 
