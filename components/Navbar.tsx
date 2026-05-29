@@ -1,7 +1,7 @@
 "use client";
 // Navbar — sticky top nav with cart bounce, floating cart preview, kitchen status pill.
 import Link from "next/link";
-import { ShoppingCart, X } from "lucide-react";
+import { ShoppingCart, X, Home } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -47,10 +47,23 @@ export default function Navbar() {
   return (
     <nav className="bg-brand-dark text-brand-on-dark sticky top-0 z-50 shadow-md">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Brand name + kitchen status pill */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <span className="font-yatra text-xl md:text-2xl text-brand-gold tracking-wide">
-            Saas Bahu Ki Rasoi
+        {/* Home link with logo */}
+        <Link href="/" className="flex items-center gap-2 group" aria-label="Go to home">
+          {/* Logo image — falls back to Home icon if image is missing */}
+          <div className="relative w-8 h-8 rounded-full overflow-hidden border border-brand-gold/30 flex-shrink-0 bg-brand-wood/20 flex items-center justify-center">
+            <Image
+              src="/logo-saas-bahu-ki-rasoi.png"
+              alt="Saas Bahu Ki Rasoi logo"
+              fill
+              className="object-cover"
+              sizes="32px"
+              onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+            />
+            {/* Fallback icon shown behind image */}
+            <Home size={16} className="text-brand-gold absolute" />
+          </div>
+          <span className="font-hind text-sm md:text-base text-brand-gold group-hover:text-brand-rust transition-colors font-semibold">
+            Home
           </span>
         </Link>
         {/* Kitchen open/closed pill — fetches DB overrides via useKitchenStatus */}
