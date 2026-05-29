@@ -89,6 +89,9 @@ export default function AdminShell({ children }: AdminShellProps) {
           <NavLink href="/admin/schedule" onClick={() => setDrawerOpen(false)}>
             🗓️ Kitchen Schedule
           </NavLink>
+          <NavLink href="/admin/reviews" onClick={() => setDrawerOpen(false)}>
+            ⭐ Reviews
+          </NavLink>
         </nav>
 
         {/* Logout */}

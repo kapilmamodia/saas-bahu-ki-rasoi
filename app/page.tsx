@@ -40,7 +40,6 @@ async function getSpecials(): Promise<MenuItem[]> {
 /** Home page — hero section + today's specials grid */
 export default async function HomePage() {
   const specials = await getSpecials();
-  // Coupons flagged to show on home (active + within validity window)
   const promoCoupons = await getHomePageCoupons();
 
   return (
@@ -108,6 +107,9 @@ export default async function HomePage() {
           </div>
         )}
       </section>
+
+
+      <hr className="divider-spice mx-auto max-w-3xl" />
 
       {/* ── Our Story teaser — links to full /about page ─────────────────── */}
       <section className="relative overflow-hidden py-12 px-4 text-center"

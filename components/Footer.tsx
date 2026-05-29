@@ -2,8 +2,81 @@
 /**
  * Footer — public site footer with brand identity, quick links, contact and copyright.
  * Hidden on /admin routes (ConditionalShell handles that).
+ * The Opening Hours box is a live client island fed by useKitchenStatus (DB overrides included).
  */
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useKitchenStatus } from "@/hooks/useKitchenStatus";
+
+// ── Live Kitchen Status island ────────────────────────────────────────────────
+
+/**
+ * FooterKitchenStatus — live open/closed badge + hours in the footer.
+ * Reads from useKitchenStatus so DB overrides (holidays, custom hours) are reflected.
+ */
+function FooterKitchenStatus() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const { isOpen, closingSoon, scheduleText, nextOpenText, overrideNote } = useKitchenStatus();
+
+  if (!mounted) {
+    // Server-side / before hydration — show static skeleton
+    return (
+      <div className="bg-brand-gold/10 border border-brand-gold/20 rounded-xl px-3 py-2.5 animate-pulse">
+        <div className="h-3 w-24 bg-brand-gold/20 rounded mb-2" />
+        <div className="h-3 w-36 bg-brand-gold/10 rounded" />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`rounded-xl px-3 py-2.5 border transition-colors
+      ${isOpen
+        ? closingSoon
+          ? "bg-amber-500/10 border-amber-400/25"
+          : "bg-green-500/10 border-green-400/20"
+        : "bg-red-500/10 border-red-400/20"
+      }`}>
+
+      {/* Status row — dot + label */}
+      <div className="flex items-center gap-2 mb-1">
+        {/* Animated pulsing status dot */}
+        <span className={`w-2 h-2 rounded-full animate-pulse flex-shrink-0
+          ${isOpen ? closingSoon ? "bg-amber-400" : "bg-green-400" : "bg-red-400"}`} />
+        <p className={`font-caveat text-base font-semibold
+          ${isOpen ? closingSoon ? "text-amber-300" : "text-green-300" : "text-red-300"}`}>
+          {isOpen
+            ? closingSoon ? "⏰ Closing Soon" : "🟢 Open Now"
+            : "🔴 Closed"
+          }
+        </p>
+      </div>
+
+      {/* Hours from DB */}
+      <p className="font-hind text-brand-on-dark/70 text-xs leading-snug">
+        🕙 {scheduleText}
+      </p>
+
+      {/* When closed — show override note + next open time */}
+      {!isOpen && (
+        <p className="font-hind text-brand-on-dark/50 text-xs mt-1 leading-snug">
+          {overrideNote && <span className="block">{overrideNote}</span>}
+          {nextOpenText}
+        </p>
+      )}
+
+      {/* When closing soon — show next open */}
+      {isOpen && closingSoon && (
+        <p className="font-hind text-amber-300/70 text-xs mt-1">
+          {nextOpenText}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────────
 
 /** Public site footer */
 export default function Footer() {
@@ -60,7 +133,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 3 — Contact + Hours */}
+        {/* Column 3 — Contact + Live Hours */}
         <div>
           <p className="font-playfair text-brand-gold text-base font-semibold mb-4">
             Contact Us
@@ -69,24 +142,23 @@ export default function Footer() {
             {/* Veena */}
             <div>
               <p className="font-caveat text-brand-on-dark/60 text-sm">Veena Khandelwal</p>
-              <a href="tel:+91XXXXXXXXXX"
+              <a href="tel:+919829075457"
                 className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors">
-                📞 +91 XXX-XX-XXXX
+                📞 +91 98290 75457
               </a>
             </div>
             {/* Rajeshwari */}
             <div>
               <p className="font-caveat text-brand-on-dark/60 text-sm">Rajeshwari Khandelwal</p>
-              <a href="tel:+91XXXXXXXXXX"
+              <a href="tel:+919982128866"
                 className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors">
-                📞 +91 XXX-XX-XXXX
+                📞 +91 99821 28866
               </a>
             </div>
-            {/* Opening hours */}
-            <div className="bg-brand-gold/10 border border-brand-gold/20 rounded-xl px-3 py-2">
-              <p className="font-caveat text-brand-gold text-base mb-0.5">🕙 Opening Hours</p>
-              <p className="font-hind text-brand-on-dark/70 text-sm">Mon – Sun: 10:00 AM – 9:00 PM</p>
-            </div>
+
+            {/* Live kitchen status — DB-driven open/close hours */}
+            <FooterKitchenStatus />
+
             {/* Catering */}
             <div className="bg-brand-gold/10 border border-brand-gold/20 rounded-xl px-3 py-2">
               <p className="font-caveat text-brand-gold text-sm">

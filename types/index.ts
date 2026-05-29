@@ -2,6 +2,18 @@
 // All data model types live here — import from "@/types" throughout the app.
 // Prices are ALWAYS stored in cents (integers) — never floats for money.
 
+// ─── Review ───────────────────────────────────────────────────────────────────
+/** A customer review — must be approved by admin before showing publicly */
+export interface Review {
+  id: string;
+  customer_name: string;
+  rating: number;        // 1-5
+  message: string;
+  dish_name: string | null;   // optional dish being reviewed
+  is_approved: boolean;
+  created_at: string;
+}
+
 // ─── Kitchen Settings (default schedule) ─────────────────────────────────────
 /** Singleton row in kitchen_settings — stores the default open/close hours */
 export interface KitchenSettings {

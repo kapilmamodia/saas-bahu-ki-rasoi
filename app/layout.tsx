@@ -6,6 +6,7 @@ import "./globals.css";
 import { CartProvider } from "@/hooks/useCart";
 import ConditionalShell from "@/components/ConditionalShell";
 import { CartToastProvider } from "@/components/CartToast";
+import ReviewsDrawer from "@/components/ReviewsDrawer";
 
 // ── Google Fonts ─────────────────────────────────────────────────────────────
 /** Hero / display headings — hand-lettered warmth */
@@ -61,6 +62,8 @@ export default function RootLayout({
         <CartProvider>
           <CartToastProvider>
             <ConditionalShell>{children}</ConditionalShell>
+            {/* Floating reviews drawer — visible on all public pages */}
+            <ReviewsDrawer />
           </CartToastProvider>
         </CartProvider>
       </body>
