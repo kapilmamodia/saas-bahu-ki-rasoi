@@ -1,13 +1,14 @@
 /**
  * app/admin/schedule/page.tsx — Kitchen Schedule management page.
- * Shows default hours, all upcoming overrides (holidays / early close / late open),
- * and lets admins add/edit/delete per-date overrides.
+ * Shows editable default hours (from DB), all upcoming overrides, and lets admins
+ * add/edit/delete per-date overrides.
  */
-import { getScheduleOverrides } from "@/lib/actions/scheduleActions";
+import { getScheduleOverrides, getDefaultSchedule } from "@/lib/actions/scheduleActions";
 import { OPEN_HOUR, CLOSE_HOUR } from "@/lib/kitchenHours";
 import type { KitchenScheduleOverride } from "@/types";
 import ScheduleForm from "./ScheduleForm";
 import DeleteScheduleButton from "./DeleteScheduleButton";
+import DefaultScheduleForm from "./DefaultScheduleForm";
 
 export const dynamic = "force-dynamic";
 
@@ -27,48 +28,42 @@ function fmtDate(d: string): string {
 }
 
 /** Classify override type for display */
-function overrideType(o: KitchenScheduleOverride): { label: string; color: string } {
+function overrideType(o: KitchenScheduleOverride, defaultOpen: number, defaultClose: number): { label: string; color: string } {
   if (o.is_closed) return { label: "Holiday / Day Off", color: "text-red-600 bg-red-50 border-red-200" };
-  if (o.open_hour  !== null && o.open_hour  > OPEN_HOUR)  return { label: "Late Open",    color: "text-amber-700 bg-amber-50 border-amber-200" };
-  if (o.open_hour  !== null && o.open_hour  < OPEN_HOUR)  return { label: "Early Open",   color: "text-green-700 bg-green-50 border-green-200" };
-  if (o.close_hour !== null && o.close_hour < CLOSE_HOUR) return { label: "Early Close",  color: "text-orange-700 bg-orange-50 border-orange-200" };
-  if (o.close_hour !== null && o.close_hour > CLOSE_HOUR) return { label: "Extended Hours", color: "text-blue-700 bg-blue-50 border-blue-200" };
+  if (o.open_hour  !== null && o.open_hour  > defaultOpen)  return { label: "Late Open",    color: "text-amber-700 bg-amber-50 border-amber-200" };
+  if (o.open_hour  !== null && o.open_hour  < defaultOpen)  return { label: "Early Open",   color: "text-green-700 bg-green-50 border-green-200" };
+  if (o.close_hour !== null && o.close_hour < defaultClose) return { label: "Early Close",  color: "text-orange-700 bg-orange-50 border-orange-200" };
+  if (o.close_hour !== null && o.close_hour > defaultClose) return { label: "Extended Hours", color: "text-blue-700 bg-blue-50 border-blue-200" };
   return { label: "Custom Hours", color: "text-brand-muted bg-brand-bg border-brand-wood/20" };
 }
 
 export default async function AdminSchedulePage() {
-  const overrides = await getScheduleOverrides();
+  const [overrides, defaultSchedule] = await Promise.all([
+    getScheduleOverrides(),
+    getDefaultSchedule(),
+  ]);
   // Split into upcoming and past
   const today = new Date().toISOString().split("T")[0];
   const upcoming = overrides.filter(o => o.date >= today);
   const past     = overrides.filter(o => o.date <  today);
+
+  // Use DB defaults for override type classification; fall back to constants
+  const effectiveOpen  = defaultSchedule.open_hour  ?? OPEN_HOUR;
+  const effectiveClose = defaultSchedule.close_hour ?? CLOSE_HOUR;
 
   return (
     <div className="max-w-3xl">
       <h1 className="font-yatra text-3xl text-brand-heading mb-2">Kitchen Schedule</h1>
       <hr className="divider-spice mb-8" />
 
-      {/* ── Default schedule card ── */}
+      {/* ── Default schedule card — editable ── */}
       <div className="bg-brand-card border border-brand-wood/25 rounded-2xl p-5 mb-8 shadow-sm">
         <h2 className="font-playfair text-lg text-brand-heading mb-4">⚙️ Default Schedule</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-          <div className="bg-brand-bg rounded-xl px-4 py-3">
-            <p className="font-hind text-xs text-brand-muted uppercase tracking-wide mb-1">Operating Days</p>
-            <p className="font-playfair text-brand-heading font-semibold">Mon – Sun</p>
-            <p className="font-caveat text-brand-gold text-sm">All 7 days</p>
-          </div>
-          <div className="bg-brand-bg rounded-xl px-4 py-3">
-            <p className="font-hind text-xs text-brand-muted uppercase tracking-wide mb-1">Opens At</p>
-            <p className="font-playfair text-brand-heading font-semibold">{fmt12(OPEN_HOUR)}</p>
-          </div>
-          <div className="bg-brand-bg rounded-xl px-4 py-3">
-            <p className="font-hind text-xs text-brand-muted uppercase tracking-wide mb-1">Closes At</p>
-            <p className="font-playfair text-brand-heading font-semibold">{fmt12(CLOSE_HOUR)}</p>
-          </div>
-        </div>
-        <p className="font-hind text-xs text-brand-muted mt-3 text-center">
-          To change default hours, edit <code className="bg-brand-bg px-1 rounded text-brand-wood font-mono">lib/kitchenHours.ts</code>
-        </p>
+        {/* DefaultScheduleForm renders read-only view with inline edit capability */}
+        <DefaultScheduleForm
+          currentOpenHour={effectiveOpen}
+          currentCloseHour={effectiveClose}
+        />
       </div>
 
       {/* ── Add override form ── */}
@@ -96,7 +91,7 @@ export default async function AdminSchedulePage() {
         ) : (
           <div className="flex flex-col gap-3">
             {upcoming.map(o => {
-              const { label, color } = overrideType(o);
+              const { label, color } = overrideType(o, effectiveOpen, effectiveClose);
               return (
                 <div key={o.id} className={`border rounded-2xl p-4 flex items-start justify-between gap-4 ${color}`}>
                   <div className="flex-1">
@@ -108,7 +103,7 @@ export default async function AdminSchedulePage() {
                       <p className="font-hind text-sm">🔴 Fully Closed</p>
                     ) : (
                       <p className="font-hind text-sm">
-                        🕙 {fmt12(o.open_hour ?? OPEN_HOUR)} – {fmt12(o.close_hour ?? CLOSE_HOUR)}
+                        🕙 {fmt12(o.open_hour ?? effectiveOpen)} – {fmt12(o.close_hour ?? effectiveClose)}
                       </p>
                     )}
                     {o.note && <p className="font-caveat text-sm mt-1">📝 {o.note}</p>}
@@ -127,7 +122,7 @@ export default async function AdminSchedulePage() {
           <h2 className="font-playfair text-base text-brand-muted mb-3">🗂️ Past Overrides ({past.length})</h2>
           <div className="flex flex-col gap-2">
             {past.slice(0, 10).map(o => {
-              const { label, color } = overrideType(o);
+              const { label, color } = overrideType(o, effectiveOpen, effectiveClose);
               return (
                 <div key={o.id} className="border border-brand-wood/10 rounded-xl px-4 py-3 flex items-center justify-between gap-3 opacity-60">
                   <div className="flex items-center gap-3">

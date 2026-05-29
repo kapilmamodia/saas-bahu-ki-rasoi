@@ -1,12 +1,13 @@
 /**
  * GET /api/kitchen-status
  * Returns today's kitchen status including any DB override.
+ * Also reads default open/close hours from kitchen_settings.
  * When kitchen is closed today, finds the next open date by scanning forward.
  */
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getKitchenStatus, todayIST, OPEN_HOUR } from "@/lib/kitchenHours";
-import type { KitchenScheduleOverride } from "@/types";
+import { getKitchenStatus, todayIST } from "@/lib/kitchenHours";
+import type { KitchenScheduleOverride, KitchenSettings } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,15 @@ export async function GET() {
     const today    = todayIST();
     const supabase = createAdminClient();
 
+    // Fetch default schedule from kitchen_settings (singleton)
+    const { data: settingsRow } = await supabase
+      .from("kitchen_settings")
+      .select("open_hour, close_hour")
+      .eq("id", 1)
+      .maybeSingle();
+    const defaults = (settingsRow as Pick<KitchenSettings, "open_hour" | "close_hour">) ?? null;
+    const defaultOpen  = defaults?.open_hour  ?? 10;
+
     // Fetch today's override
     const { data: todayRow } = await supabase
       .from("kitchen_schedule")
@@ -45,7 +55,8 @@ export async function GET() {
       .maybeSingle();
 
     const override = (todayRow as KitchenScheduleOverride) ?? null;
-    const status   = getKitchenStatus(override);
+    // Pass both override and DB defaults so status uses live hours
+    const status   = getKitchenStatus(override, defaults);
 
     // If kitchen is closed today, find the next open date (scan up to 90 days forward)
     let nextOpenText = status.nextOpenText;
@@ -68,10 +79,10 @@ export async function GET() {
       let candidate = tomorrow;
       for (let i = 0; i < 90; i++) {
         if (!closedDates.has(candidate)) {
-          // Found the next open day — get its open_hour if overridden
+          // Found the next open day — get its open_hour if overridden, else use DB default
           const overrideRow = ((futureOverrides ?? []) as KitchenScheduleOverride[])
             .find(r => r.date === candidate);
-          const openHour = overrideRow?.open_hour ?? OPEN_HOUR;
+          const openHour = overrideRow?.open_hour ?? defaultOpen;
           nextOpenText = `Opens on ${fmtDate(candidate)} at ${fmt12(openHour)}`;
           break;
         }

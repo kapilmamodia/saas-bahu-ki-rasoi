@@ -1,12 +1,14 @@
 /**
  * lib/kitchenHours.ts — single source of truth for kitchen open/close schedule.
  * Default hours: Mon–Sun, 10:00 AM – 9:00 PM IST.
+ * These constants are FALLBACKS used when the DB is unreachable.
+ * The live defaults are stored in kitchen_settings and fetched via scheduleActions.
  * Per-date overrides (holidays, early close, late open) come from kitchen_schedule table.
- * To change default hours, edit OPEN_HOUR / CLOSE_HOUR only here.
  */
 
-export const OPEN_HOUR  = 10; // 10:00 AM IST (default)
-export const CLOSE_HOUR = 21; // 9:00 PM  IST (default)
+/** Fallback constants — only used when DB is unreachable */
+export const OPEN_HOUR  = 10; // 10:00 AM IST (fallback)
+export const CLOSE_HOUR = 21; // 9:00 PM  IST (fallback)
 
 /** Returns current IST Date object */
 export function nowIST(): Date {
@@ -38,20 +40,28 @@ interface Override {
 
 /**
  * Returns the current kitchen status.
- * Pass an optional override fetched server-side for SSR accuracy.
- * On client, call without argument — reads clock only (no DB access).
+ * @param override  - Optional per-date override from kitchen_schedule.
+ * @param defaults  - Optional default hours from kitchen_settings DB row.
+ *                    Falls back to OPEN_HOUR / CLOSE_HOUR constants.
  */
-export function getKitchenStatus(override?: Override | null): KitchenStatus {
+export function getKitchenStatus(
+  override?: Override | null,
+  defaults?: { open_hour: number; close_hour: number } | null
+): KitchenStatus {
   const ist   = nowIST();
   const hour  = ist.getHours();
   const min   = ist.getMinutes();
 
+  // Use DB-driven defaults when available, else hardcoded fallback
+  const defaultOpen  = defaults?.open_hour  ?? OPEN_HOUR;
+  const defaultClose = defaults?.close_hour ?? CLOSE_HOUR;
+
   // Apply override if present
-  const isClosed   = override?.is_closed ?? false;
-  const openHour   = override?.open_hour  ?? OPEN_HOUR;
-  const closeHour  = override?.close_hour ?? CLOSE_HOUR;
-  const isOverridden = !!override;
-  const overrideNote = override?.note ?? null;
+  const isClosed    = override?.is_closed ?? false;
+  const openHour    = override?.open_hour  ?? defaultOpen;
+  const closeHour   = override?.close_hour ?? defaultClose;
+  const isOverridden  = !!override;
+  const overrideNote  = override?.note ?? null;
 
   const isOpen      = !isClosed && hour >= openHour && hour < closeHour;
   const minsLeft    = isOpen ? (closeHour - hour - 1) * 60 + (60 - min) : 0;
@@ -66,7 +76,7 @@ export function getKitchenStatus(override?: Override | null): KitchenStatus {
     } else {
       nextOpenText = hour < openHour
         ? `Opens today at ${fmt12(openHour)}`
-        : `Opens tomorrow at ${fmt12(OPEN_HOUR)}`;
+        : `Opens tomorrow at ${fmt12(defaultOpen)}`;
     }
   }
 
@@ -74,7 +84,7 @@ export function getKitchenStatus(override?: Override | null): KitchenStatus {
     isOpen,
     closingSoon,
     nextOpenText,
-    scheduleText: `Mon – Sun · ${fmt12(OPEN_HOUR)} – ${fmt12(CLOSE_HOUR)}`,
+    scheduleText: `Mon – Sun · ${fmt12(defaultOpen)} – ${fmt12(defaultClose)}`,
     isOverridden,
     overrideNote,
   };

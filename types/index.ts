@@ -2,6 +2,15 @@
 // All data model types live here — import from "@/types" throughout the app.
 // Prices are ALWAYS stored in cents (integers) — never floats for money.
 
+// ─── Kitchen Settings (default schedule) ─────────────────────────────────────
+/** Singleton row in kitchen_settings — stores the default open/close hours */
+export interface KitchenSettings {
+  id: 1;
+  open_hour: number;   // 0-23 (IST)
+  close_hour: number;  // 0-23 (IST)
+  updated_at: string;
+}
+
 // ─── Kitchen Schedule Override ───────────────────────────────────────────────
 /** A per-date kitchen schedule override (holiday, early close, late open, day off) */
 export interface KitchenScheduleOverride {
