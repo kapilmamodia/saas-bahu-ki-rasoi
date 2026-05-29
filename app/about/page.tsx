@@ -14,11 +14,11 @@ export const metadata: Metadata = {
 /** About Us page — full story, person cards, values */
 export default function AboutPage() {
   return (
-    <div className="min-h-screen" style={{ background: "#3B1F0C" }}>
+    <div className="min-h-screen">
 
-      {/* ── Hero strip — starts and ends at #3B1F0C so no seam with story below ── */}
+      {/* ── Hero strip ── */}
       <section className="relative overflow-hidden py-14 px-4 text-center"
-        style={{ background: "#3B1F0C" }}>
+        style={{ background: "linear-gradient(160deg,#1A0A02 0%,#2A0E04 50%,#3B1F0C 100%)" }}>
         {/* Dot pattern */}
         <div className="absolute inset-0 opacity-10"
           style={{ backgroundImage: "radial-gradient(#D4A017 1px,transparent 1px)", backgroundSize: "28px 28px" }} />
@@ -43,9 +43,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── Story section — fades into footer colour #3B1F0C so there's no seam ── */}
+      {/* ── Story section ── */}
       <section className="relative overflow-hidden py-14 px-4"
-        style={{ background: "linear-gradient(180deg,#3B1F0C 0%,#3B1F0C 100%)" }}>
+        style={{ background: "linear-gradient(180deg,#3B1F0C 0%,#2A0E04 100%)" }}>
         {/* Dot pattern */}
         <div className="absolute inset-0 opacity-5"
           style={{ backgroundImage: "radial-gradient(#D4A017 1px,transparent 1px)", backgroundSize: "28px 28px" }} />
