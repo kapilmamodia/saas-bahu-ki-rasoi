@@ -198,7 +198,6 @@ function OrderCard({ order, index }: { order: OrderWithItems; index: number }) {
 
 /** Summary stats bar shown above the order list */
 function StatBar({ orders }: { orders: OrderWithItems[] }) {
-  const completed = orders.filter(o => o.status === "completed").length;
   const items = orders.reduce((s, o) => s + o.items.reduce((si, i) => si + i.quantity, 0), 0);
 
   return (
