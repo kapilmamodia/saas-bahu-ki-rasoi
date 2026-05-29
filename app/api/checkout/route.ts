@@ -23,6 +23,7 @@ interface CheckoutBody {
   items: CartItem[];
   customerEmail: string;
   customerName: string;
+  customerPhone?: string | null;
   couponCode?: string;
   deliveryType?: "pickup" | "delivery";
   deliveryAddress?: string | null;
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
   try {
     // Parse and validate incoming request body
     const body: CheckoutBody = await request.json();
-    const { items, customerEmail, customerName, couponCode, deliveryType, deliveryAddress } = body;
+    const { items, customerEmail, customerName, customerPhone, couponCode, deliveryType, deliveryAddress } = body;
 
     // Basic validation — must have items and a customer email
     if (!items || items.length === 0) {
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
         stripe_session_id: mockSessionId,
         customer_email: customerEmail,
         customer_name: customerName || "Guest",
+        customer_phone: customerPhone ?? null,
         status: "pending",
         subtotal_cents: subtotalCents,
         discount_cents: discountCents,

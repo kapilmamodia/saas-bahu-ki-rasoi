@@ -10,7 +10,10 @@ import { useCart } from "@/hooks/useCart";
  * Cart badge shows total item count from CartContext.
  */
 export default function Navbar() {
-  const { itemCount } = useCart();
+  const { itemCount, totalCents } = useCart();
+
+  /** Format paise → compact rupee string e.g. ₹320 */
+  const formatTotal = (paise: number) => `₹${(paise / 100).toLocaleString("en-IN")}`;
 
   return (
     <nav
@@ -42,22 +45,24 @@ export default function Navbar() {
             My Orders
           </Link>
 
-          {/* Cart icon with item count badge */}
-          <Link href="/cart" className="relative" aria-label="View cart">
-            {/* Gold-tinted cart icon */}
-            <ShoppingCart
-              size={22}
-              className="text-brand-gold hover:text-brand-rust transition-colors"
-            />
-            {/* Badge — only shown when cart has items */}
+          {/* Cart icon with item count badge + total */}
+          <Link href="/cart" className="relative flex items-center gap-2 group" aria-label="View cart">
+            <div className="relative">
+              <ShoppingCart size={22} className="text-brand-gold group-hover:text-brand-rust transition-colors" />
+              {/* Item count badge */}
+              {itemCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-brand-rust text-white text-xs
+                                 font-bold rounded-full w-5 h-5 flex items-center justify-center font-hind"
+                  aria-label={`${itemCount} items in cart`}>
+                  {itemCount > 99 ? "99+" : itemCount}
+                </span>
+              )}
+            </div>
+            {/* Cart total — only shown when cart has items */}
             {itemCount > 0 && (
-              <span
-                className="absolute -top-2 -right-2 bg-brand-rust text-white text-xs
-                           font-bold rounded-full w-5 h-5 flex items-center justify-center
-                           font-hind"
-                aria-label={`${itemCount} items in cart`}
-              >
-                {itemCount > 99 ? "99+" : itemCount}
+              <span className="hidden sm:block font-hind text-sm font-semibold text-brand-gold
+                               group-hover:text-brand-rust transition-colors">
+                {formatTotal(totalCents)}
               </span>
             )}
           </Link>

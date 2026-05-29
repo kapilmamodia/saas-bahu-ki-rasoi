@@ -107,6 +107,19 @@ export default function OrderConfirmation({
                   <Text style={{ color: "#16a34a", fontSize: "13px", fontWeight: "bold", margin: 0 }}>PAID</Text>
                 </Column>
               </Row>
+              {/* Email + Phone row */}
+              <Row style={{ marginTop: "10px" }}>
+                <Column>
+                  <Text style={{ color: "#8B6F5E", fontSize: "11px", margin: "0 0 2px", textTransform: "uppercase" }}>Email</Text>
+                  <Text style={{ color: "#2C1A0E", fontSize: "12px", margin: 0 }}>{order.customer_email}</Text>
+                </Column>
+                {order.customer_phone && (
+                  <Column>
+                    <Text style={{ color: "#8B6F5E", fontSize: "11px", margin: "0 0 2px", textTransform: "uppercase" }}>Phone</Text>
+                    <Text style={{ color: "#2C1A0E", fontSize: "12px", margin: 0 }}>{order.customer_phone}</Text>
+                  </Column>
+                )}
+              </Row>
             </Section>
 
             {/* Items ordered */}

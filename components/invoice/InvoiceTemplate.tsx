@@ -173,6 +173,10 @@ export default function InvoiceTemplate({ order, orderItems }: InvoiceTemplatePr
             <Text style={styles.metaLabel}>Bill To</Text>
             <Text style={styles.metaValue}>{order.customer_name}</Text>
             <Text style={styles.metaValueLight}>{order.customer_email}</Text>
+            {/* Phone — only rendered when provided */}
+            {order.customer_phone && (
+              <Text style={styles.metaValueLight}>{order.customer_phone}</Text>
+            )}
             {/* Delivery type */}
             <Text style={[styles.metaLabel, { marginTop: 8 }]}>Order Type</Text>
             <Text style={styles.metaValueLight}>

@@ -40,6 +40,7 @@ export interface Order {
   stripe_session_id: string;
   customer_email: string;
   customer_name: string;
+  customer_phone: string | null;  // optional phone number
   status: "pending" | "paid" | "completed" | "refunded";
   subtotal_cents: number;
   discount_cents: number;      // 0 if no coupon applied

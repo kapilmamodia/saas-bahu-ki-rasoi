@@ -15,6 +15,7 @@ export interface OrderRow {
   order_number: number | null;
   customer_name: string;
   customer_email: string;
+  customer_phone: string | null;
   total_cents: number;
   status: string;
   created_at: string;
@@ -182,10 +183,13 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
                     #{order.order_number ?? order.id.slice(0, 8).toUpperCase()}
                   </td>
 
-                  {/* Customer name + email */}
+                  {/* Customer name + email + phone */}
                   <td className="px-4 py-3">
                     <p className="text-brand-heading font-medium">{order.customer_name || "—"}</p>
                     <p className="text-brand-muted text-xs">{order.customer_email}</p>
+                    {order.customer_phone && (
+                      <p className="text-brand-muted text-xs">📞 {order.customer_phone}</p>
+                    )}
                   </td>
 
                   {/* Total */}

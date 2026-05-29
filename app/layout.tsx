@@ -5,6 +5,7 @@ import { Yatra_One, Playfair_Display, Hind, Caveat } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/hooks/useCart";
 import ConditionalShell from "@/components/ConditionalShell";
+import { CartToastProvider } from "@/components/CartToast";
 
 // ── Google Fonts ─────────────────────────────────────────────────────────────
 /** Hero / display headings — hand-lettered warmth */
@@ -58,8 +59,10 @@ export default function RootLayout({
       >
         {/* Cart context wraps entire app so any component can access cart state */}
         <CartProvider>
-          {/* ConditionalShell hides public Navbar/Footer on /admin routes */}
-          <ConditionalShell>{children}</ConditionalShell>
+          <CartToastProvider>
+            {/* ConditionalShell hides public Navbar/Footer on /admin routes */}
+            <ConditionalShell>{children}</ConditionalShell>
+          </CartToastProvider>
         </CartProvider>
       </body>
     </html>

@@ -92,6 +92,16 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
           <span className="text-brand-body font-medium">{typedOrder.customer_name || "—"}</span>
           <span className="text-brand-muted">Email</span>
           <span className="text-brand-body">{typedOrder.customer_email}</span>
+          {/* Phone — shown only when provided */}
+          {typedOrder.customer_phone && (
+            <>
+              <span className="text-brand-muted">Phone</span>
+              <a href={`tel:${typedOrder.customer_phone}`}
+                className="text-brand-wood hover:text-brand-rust transition-colors font-medium">
+                📞 {typedOrder.customer_phone}
+              </a>
+            </>
+          )}
           {/* Delivery type */}
           <span className="text-brand-muted">Order Type</span>
           <span className="text-brand-body font-semibold">

@@ -115,6 +115,13 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
           <span className="text-brand-muted">Email</span>
           <span>{typedOrder.customer_email}</span>
         </div>
+        {/* Phone — shown only if provided */}
+        {typedOrder.customer_phone && (
+          <div className="flex justify-between font-hind text-sm text-brand-body mb-1">
+            <span className="text-brand-muted">Phone</span>
+            <span>{typedOrder.customer_phone}</span>
+          </div>
+        )}
         {/* Delivery type */}
         <div className="flex justify-between font-hind text-sm text-brand-body mb-1">
           <span className="text-brand-muted">Order Type</span>

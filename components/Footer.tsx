@@ -60,7 +60,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 3 — Contact */}
+        {/* Column 3 — Contact + Hours */}
         <div>
           <p className="font-playfair text-brand-gold text-base font-semibold mb-4">
             Contact Us
@@ -69,25 +69,26 @@ export default function Footer() {
             {/* Veena */}
             <div>
               <p className="font-caveat text-brand-on-dark/60 text-sm">Veena Khandelwal</p>
-              <a
-                href="tel:+91XXXXXXXXXX"
-                className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors"
-              >
+              <a href="tel:+91XXXXXXXXXX"
+                className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors">
                 📞 +91 XXX-XX-XXXX
               </a>
             </div>
             {/* Rajeshwari */}
             <div>
               <p className="font-caveat text-brand-on-dark/60 text-sm">Rajeshwari Khandelwal</p>
-              <a
-                href="tel:+91XXXXXXXXXX"
-                className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors"
-              >
+              <a href="tel:+91XXXXXXXXXX"
+                className="font-hind text-sm text-brand-on-dark/80 hover:text-brand-gold transition-colors">
                 📞 +91 XXX-XX-XXXX
               </a>
             </div>
+            {/* Opening hours */}
+            <div className="bg-brand-gold/10 border border-brand-gold/20 rounded-xl px-3 py-2">
+              <p className="font-caveat text-brand-gold text-base mb-0.5">🕙 Opening Hours</p>
+              <p className="font-hind text-brand-on-dark/70 text-sm">Mon – Sun: 10:00 AM – 9:00 PM</p>
+            </div>
             {/* Catering */}
-            <div className="mt-1 bg-brand-gold/10 border border-brand-gold/20 rounded-xl px-3 py-2">
+            <div className="bg-brand-gold/10 border border-brand-gold/20 rounded-xl px-3 py-2">
               <p className="font-caveat text-brand-gold text-sm">
                 🎉 Kitty Party &amp; Get Together catering available!
               </p>

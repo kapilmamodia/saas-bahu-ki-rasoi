@@ -26,6 +26,7 @@ export default function CartPage() {
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery">("pickup");
@@ -75,6 +76,7 @@ export default function CartPage() {
           items,
           customerEmail,
           customerName,
+          customerPhone: customerPhone.trim() || null,
           couponCode: couponResult?.valid ? couponResult.coupon?.code : undefined,
           deliveryType,
           deliveryAddress: deliveryType === "delivery" ? deliveryAddress.trim() : null,
@@ -386,6 +388,18 @@ export default function CartPage() {
                   <input type="email" value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     placeholder="e.g. priya@example.com"
+                    className="w-full border border-brand-wood/25 rounded-xl px-3 py-2
+                               font-hind text-sm text-brand-body bg-brand-bg
+                               placeholder:text-brand-muted/50 focus:outline-none
+                               focus:ring-2 focus:ring-brand-wood/30" />
+                </div>
+                <div>
+                  <label className="font-hind text-xs text-brand-muted uppercase tracking-wide block mb-1">
+                    Phone Number
+                  </label>
+                  <input type="tel" value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    placeholder="e.g. 98765 43210"
                     className="w-full border border-brand-wood/25 rounded-xl px-3 py-2
                                font-hind text-sm text-brand-body bg-brand-bg
                                placeholder:text-brand-muted/50 focus:outline-none
