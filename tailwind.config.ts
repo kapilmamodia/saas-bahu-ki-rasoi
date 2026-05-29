@@ -2,6 +2,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -43,9 +44,24 @@ const config: Config = {
           "0%":   { transform: "translateY(120%)", opacity: "0" },
           "100%": { transform: "translateY(0%)",   opacity: "1" },
         },
+        // Blinking cursor for typewriter effect
+        "blink": {
+          "0%, 100%": { opacity: "1" },
+          "50%":       { opacity: "0" },
+        },
+        // Cart shake on item add
+        "cart-bounce": {
+          "0%, 100%": { transform: "scale(1) rotate(0deg)" },
+          "20%":       { transform: "scale(1.3) rotate(-8deg)" },
+          "40%":       { transform: "scale(1.2) rotate(8deg)" },
+          "60%":       { transform: "scale(1.15) rotate(-4deg)" },
+          "80%":       { transform: "scale(1.1) rotate(2deg)" },
+        },
       },
       animation: {
-        "slide-up": "slide-up 0.5s ease-out forwards",
+        "slide-up":    "slide-up 0.5s ease-out forwards",
+        "blink":       "blink 1s step-end infinite",
+        "cart-bounce": "cart-bounce 0.5s ease-in-out",
       },
     },
   },

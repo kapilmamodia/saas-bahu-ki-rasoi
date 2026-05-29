@@ -5,6 +5,7 @@ import MenuCard from "@/components/menu/MenuCard";
 import type { MenuItem } from "@/types";
 import { getHomePageCoupons } from "@/lib/actions/couponActions";
 import CouponPopup from "@/components/coupon/CouponPopup";
+import TypewriterMood from "@/components/TypewriterMood";
 
 /**
  * Force dynamic rendering — never pre-render at build time with empty data.
@@ -51,9 +52,8 @@ export default async function HomePage() {
         <h1 className="font-yatra text-4xl md:text-6xl text-white leading-tight mb-3">
           Saas Bahu Ki Rasoi
         </h1>
-        <p className="font-playfair text-xl md:text-2xl text-brand-gold italic mb-6">
-          Order Food For Any Mood
-        </p>
+        {/* Typewriter cycling moods — client island */}
+        <TypewriterMood />
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/menu" className="bg-brand-gold hover:bg-brand-rust text-brand-dark font-hind font-semibold px-8 py-3 rounded-full shadow-md transition-colors text-base">
             Browse Menu

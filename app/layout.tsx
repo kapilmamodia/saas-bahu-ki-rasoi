@@ -60,7 +60,6 @@ export default function RootLayout({
         {/* Cart context wraps entire app so any component can access cart state */}
         <CartProvider>
           <CartToastProvider>
-            {/* ConditionalShell hides public Navbar/Footer on /admin routes */}
             <ConditionalShell>{children}</ConditionalShell>
           </CartToastProvider>
         </CartProvider>

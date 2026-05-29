@@ -130,7 +130,13 @@ function OrderCard({ order, index }: { order: OrderWithItems; index: number }) {
         {expanded && (
           <div className="border-t border-brand-wood/10 bg-brand-bg/40 px-5 py-4">
 
-            {/* Items list */}
+            {/* ── Status Timeline ── */}
+            <div className="mb-5">
+              <p className="font-hind text-xs text-brand-muted uppercase tracking-wider mb-3">
+                📍 Order Status
+              </p>
+              <OrderTimeline status={order.status} completedAt={order.completed_at} createdAt={order.created_at} />
+            </div>
             <p className="font-hind text-xs text-brand-muted uppercase tracking-wider mb-3">
               🍛 Items Ordered
             </p>
@@ -402,3 +408,89 @@ export default function OrdersLookup() {
     </div>
   );
 }
+
+// ── Order Status Timeline ─────────────────────────────────────────────────────
+
+interface OrderTimelineProps {
+  status: string;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+/** Visual step-by-step status timeline — Pending → Paid → Preparing → Completed */
+function OrderTimeline({ status, createdAt, completedAt }: OrderTimelineProps) {
+  // Define the steps and which statuses count as "reached"
+  const steps: { label: string; emoji: string; reached: boolean; time?: string }[] = [
+    {
+      label: "Order Placed",
+      emoji: "📝",
+      reached: true, // always true if order exists
+      time: new Date(createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
+    },
+    {
+      label: "Payment Confirmed",
+      emoji: "✅",
+      reached: ["paid", "completed", "refunded"].includes(status),
+    },
+    {
+      label: "Being Prepared",
+      emoji: "👩‍🍳",
+      reached: ["paid", "completed"].includes(status),
+    },
+    {
+      label: "Completed",
+      emoji: "🎉",
+      reached: status === "completed",
+      time: completedAt
+        ? new Date(completedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })
+        : undefined,
+    },
+  ];
+
+  // Cancelled/refunded gets a special single-step display
+  if (status === "refunded") {
+    return (
+      <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+        <span className="text-2xl">❌</span>
+        <div>
+          <p className="font-hind text-sm font-semibold text-red-700">Order Cancelled / Refunded</p>
+          <p className="font-hind text-xs text-red-500">This order has been cancelled.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-start gap-0">
+      {steps.map((step, idx) => (
+        <div key={step.label} className="flex-1 flex flex-col items-center relative">
+          {/* Connector line between steps */}
+          {idx < steps.length - 1 && (
+            <div className={`absolute top-4 left-1/2 w-full h-0.5 z-0
+                             ${step.reached && steps[idx + 1].reached
+                               ? "bg-brand-gold"
+                               : "bg-brand-wood/15"}`} />
+          )}
+          {/* Step circle */}
+          <div className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm
+                           border-2 transition-all
+                           ${step.reached
+                             ? "border-brand-gold bg-brand-gold/10 shadow-sm"
+                             : "border-brand-wood/20 bg-brand-bg"}`}>
+            <span className={step.reached ? "" : "grayscale opacity-40"}>{step.emoji}</span>
+          </div>
+          {/* Label + time */}
+          <p className={`font-hind text-center mt-1.5 leading-tight px-0.5
+                          ${step.reached ? "text-brand-heading font-semibold" : "text-brand-muted"}
+                          text-[10px] sm:text-xs`}>
+            {step.label}
+          </p>
+          {step.time && step.reached && (
+            <p className="font-hind text-[9px] text-brand-muted mt-0.5">{step.time}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+

@@ -1,9 +1,12 @@
 "use client";
-// MenuGrid — renders sticky category tabs, search bar, item grid, and back-to-top button.
+// MenuGrid — renders sticky category tabs, search bar, item grid, back-to-top,
+// and a floating sticky "View Cart" bar at the bottom when cart has items.
 import { useState, useEffect } from "react";
 import MenuCard from "./MenuCard";
 import type { Category, MenuItem } from "@/types";
-import { Search, X, ArrowUp } from "lucide-react";
+import { Search, X, ArrowUp, ShoppingCart } from "lucide-react";
+import { useCart } from "@/hooks/useCart";
+import Link from "next/link";
 
 interface MenuItemWithCategory extends MenuItem {
   category: Category;
@@ -20,6 +23,10 @@ export default function MenuGrid({ items }: MenuGridProps) {
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery]       = useState("");
   const [showBackToTop, setShowBackToTop]   = useState(false);
+  const { itemCount, totalCents } = useCart();
+
+  /** Format paise → ₹ */
+  const fmt = (p: number) => `₹${(p / 100).toLocaleString("en-IN")}`;
 
   // Show back-to-top button after scrolling 400px
   useEffect(() => {
@@ -142,9 +149,42 @@ export default function MenuGrid({ items }: MenuGridProps) {
         className={`fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full
                     bg-brand-wood hover:bg-brand-rust text-white shadow-lg
                     flex items-center justify-center transition-all duration-300
-                    ${showBackToTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}`}>
+                    ${showBackToTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"}
+                    ${itemCount > 0 ? "bottom-24" : "bottom-6"}`}>
         <ArrowUp size={18} />
       </button>
+
+      {/* ── Sticky "View Cart" bar — slides up from bottom when cart has items ── */}
+      <div className={`fixed bottom-0 left-0 right-0 z-40 transition-all duration-400
+                       ${itemCount > 0 ? "translate-y-0" : "translate-y-full"}`}>
+        {/* Frosted gradient fade above the bar */}
+        <div className="h-6 bg-gradient-to-t from-brand-bg to-transparent pointer-events-none" />
+        <div className="bg-brand-dark border-t border-brand-gold/20 px-4 py-3 shadow-2xl">
+          <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+            {/* Left — item count + total */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-brand-wood flex items-center justify-center flex-shrink-0">
+                <ShoppingCart size={18} className="text-white" />
+                </div>
+              <div>
+                <p className="font-hind text-xs text-brand-on-dark/60 leading-none">
+                  {itemCount} item{itemCount !== 1 ? "s" : ""} in cart
+                </p>
+                <p className="font-playfair font-bold text-brand-gold text-base leading-tight">
+                  {fmt(totalCents)}
+                </p>
+              </div>
+            </div>
+            {/* Right — Go to Cart CTA */}
+            <Link href="/cart"
+              className="flex items-center gap-2 bg-brand-gold hover:bg-brand-rust
+                         text-brand-dark font-hind font-semibold px-6 py-2.5
+                         rounded-full shadow-md transition-colors text-sm whitespace-nowrap">
+              View Cart →
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

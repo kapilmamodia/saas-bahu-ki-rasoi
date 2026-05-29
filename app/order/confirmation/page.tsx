@@ -13,6 +13,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Order, OrderItem } from "@/types";
 import MockPayButton from "./MockPayButton";
 import { CheckCircle, ShoppingBag, Download } from "lucide-react";
+import ConfettiBurst from "@/components/ConfettiBurst";
 
 /** Force dynamic rendering — no caching so status updates appear immediately */
 export const dynamic = "force-dynamic";
@@ -68,6 +69,8 @@ export default async function ConfirmationPage({ searchParams }: PageProps) {
 
   return (
     <div className="min-h-screen max-w-2xl mx-auto px-4 py-10">
+      {/* 🎉 Confetti burst — fires once when order is paid */}
+      {isPaid && <ConfettiBurst />}
       {/* ── Status banner ────────────────────────────────────────────────── */}
       <div
         className={`rounded-2xl p-6 mb-8 flex items-center gap-4 shadow-sm
